@@ -4,11 +4,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity"
-    android:background="@color/colorSilver">
+    android:background="@color/colorSilver"
+    tools:context=".MainActivity">
 
     <TextView
         android:id="@+id/Title"
+        style="@style/Title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -17,14 +18,13 @@
         android:layout_marginBottom="8dp"
         android:text="Quiet"
         android:textSize="40dp"
+        android:typeface="serif"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.421"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.033"
-        android:typeface="serif"
-        style="@style/Title" />
+        app:layout_constraintVertical_bias="0.033" />
 
     <TextView
         android:id="@+id/modeText"
@@ -64,21 +64,21 @@
     <SeekBar
         android:id="@+id/seekBar"
         android:layout_width="329dp"
-        android:layout_height="31dp"
+        android:layout_height="57dp"
         android:layout_marginStart="152dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="100dp"
         android:layout_marginBottom="272dp"
         android:background="@drawable/mode_button"
         android:max="15"
         android:outlineAmbientShadowColor="@color/colorPrimary"
         android:outlineSpotShadowColor="@android:color/black"
-        android:progress="1"
+        android:progressDrawable="@drawable/custom_seekbar"
         android:rotation="90"
         android:scrollbarSize="100dp"
+        android:thumb="@drawable/placeholder"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/Title"
-        app:layout_constraintVertical_bias="0.803" />
+        app:layout_constraintTop_toBottomOf="@+id/modeSpinner" />
 
     <Button
         android:id="@+id/startBtn"
@@ -90,15 +90,15 @@
         android:layout_marginBottom="8dp"
         android:background="@drawable/rounded_button"
         android:text="Start"
+        android:textColor="@color/colorWhite"
         android:textSize="50dp"
+        android:typeface="serif"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.222"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/Title"
-        app:layout_constraintVertical_bias="0.426"
-        android:textColor="@color/colorWhite"
-        android:typeface="serif"/>
+        app:layout_constraintVertical_bias="0.426" />
 
     <Button
         android:id="@+id/soundControllerBtn"
