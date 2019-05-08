@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">Silence Watchdog</string>
+
+    <string-array name="soundModes">
+        <item>One</item>
+        <item>Two</item>
+        <item>Three</item>
+    </string-array>
+    <string-array name="modes">
+        <item>Class</item>
+        <item>Bar</item>
+        <item>Library</item>
+    </string-array>
+
+    <string name="title_activity_watchdog_main">WatchdogMainActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+</resources>
