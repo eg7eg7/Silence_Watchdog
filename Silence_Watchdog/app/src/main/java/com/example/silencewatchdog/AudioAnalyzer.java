@@ -6,21 +6,28 @@ import android.media.MediaRecorder;
 
 public class AudioAnalyzer {
     private static final int SAMPLE_DELAY = 75;
-    private static final int sampleRate = 44100;
+    private int SAMPLE_RATE = 44100;
     private AudioRecord audio;
     private int bufferSize;
-    private double amplitude = 0;
+    private double amplitude = -1;
     private Thread thread;
-    private static final int SAMPLE_DELAY = 75;
 
-    public AudioAnalyzer() {
+    public void findAudioRecord() {
+
         try {
-            bufferSize = AudioRecord
-                    .getMinBufferSize(sampleRate, AudioFormat.CHANNEL_IN_MONO,
-                            AudioFormat.ENCODING_PCM_16BIT);
+            bufferSize = AudioRecord.getMinBufferSize(SAMPLE_RATE, AudioFormat.CHANNEL_IN_MONO,
+                    AudioFormat.ENCODING_PCM_16BIT);
+            audio = new AudioRecord(MediaRecorder.AudioSource.MIC, SAMPLE_RATE,
+                    AudioFormat.CHANNEL_IN_MONO,
+                    AudioFormat.ENCODING_PCM_16BIT, bufferSize);
         } catch (Exception e) {
             android.util.Log.e("TrackingFlow", "Exception", e);
         }
+    }
+
+
+    public AudioAnalyzer() {
+        findAudioRecord();
     }
 
     public void stop() {
@@ -30,11 +37,7 @@ public class AudioAnalyzer {
     }
 
     public void start() {
-        audio = new AudioRecord(MediaRecorder.AudioSource.MIC, sampleRate,
-                AudioFormat.CHANNEL_IN_MONO,
-                AudioFormat.ENCODING_PCM_16BIT, bufferSize);
 
-        audio.startRecording();
         thread = new Thread(new Runnable() {
             public void run() {
                 while (thread != null && !thread.isInterrupted()) {
@@ -45,6 +48,8 @@ public class AudioAnalyzer {
                         ie.printStackTrace();
                     }
                     readAudioBuffer();//After this call we can get the last value assigned to the lastLevel variable
+
+
                 }
             }
         });
@@ -70,6 +75,7 @@ public class AudioAnalyzer {
                     sumLevel += buffer[i];
                 }
                 amplitude = Math.abs((sumLevel / bufferReadResult));
+
             }
 
         } catch (Exception e) {
