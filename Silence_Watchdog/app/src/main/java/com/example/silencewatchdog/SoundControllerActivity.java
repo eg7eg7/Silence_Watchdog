@@ -68,6 +68,11 @@ public class SoundControllerActivity extends AppCompatActivity implements Adapte
                         prefEditor.commit();
                         soundTest = MediaPlayer.create(getApplicationContext(), R.raw.shutup);
                         break;
+                    case "shay":
+                        prefEditor.putString("current_sound", "shay");
+                        prefEditor.commit();
+                        soundTest = MediaPlayer.create(getApplicationContext(), R.raw.shay);
+                        break;
 
                 }
             }

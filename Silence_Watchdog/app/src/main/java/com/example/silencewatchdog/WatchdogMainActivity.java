@@ -152,6 +152,9 @@ public class WatchdogMainActivity extends AppCompatActivity implements AdapterVi
             case "shutUp":
                 quiet_sound = MediaPlayer.create(getApplicationContext(), R.raw.shutup);
                 break;
+            case "shay":
+                quiet_sound = MediaPlayer.create(getApplicationContext(), R.raw.shay);
+                break;
 
         }
         float volume_d = volume/100f;
