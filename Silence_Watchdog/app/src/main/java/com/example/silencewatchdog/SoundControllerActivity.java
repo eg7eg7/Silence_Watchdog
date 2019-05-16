@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.SeekBar;
 import android.widget.Spinner;
 
 public class SoundControllerActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
@@ -21,6 +22,8 @@ public class SoundControllerActivity extends AppCompatActivity implements Adapte
     private SharedPreferences preferences;
     private MediaPlayer soundTest;
     Editor prefEditor;
+    private float count;
+    private SeekBar soundSeekBar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,15 +41,36 @@ public class SoundControllerActivity extends AppCompatActivity implements Adapte
 
         setPreferredValues();
 
+
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 finish();
             }
         });
+
+        soundSeekBar = findViewById(R.id.soundSeekBar);
+        soundSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                count = progress;
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
         playBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                float vol = count / 100f;
+                soundTest.setVolume(vol,vol);
                 soundTest.start();
             }
         });
