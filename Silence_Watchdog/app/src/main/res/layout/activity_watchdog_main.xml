@@ -28,20 +28,20 @@
 
     <ImageView
         android:id="@+id/imageView"
-        android:layout_width="171dp"
-        android:layout_height="109dp"
+        android:layout_width="97dp"
+        android:layout_height="63dp"
         android:layout_centerInParent="true"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
         android:src="@drawable/logo"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/soundControllerBtn"
         app:layout_constraintEnd_toEndOf="@+id/barrier"
-        app:layout_constraintHorizontal_bias="0.25"
+        app:layout_constraintHorizontal_bias="0.12"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/Title"
-        app:layout_constraintVertical_bias="0.75" />
+        app:layout_constraintTop_toBottomOf="@+id/startBtn"
+        app:layout_constraintVertical_bias="0.904" />
     <TextView
         android:id="@+id/modeText"
         android:layout_width="90dp"
@@ -62,8 +62,8 @@
 
     <Spinner
         android:id="@+id/silence_mode_id"
-        android:layout_width="180dp"
-        android:layout_height="35dp"
+        android:layout_width="129dp"
+        android:layout_height="33dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="120dp"
@@ -111,10 +111,10 @@
         android:typeface="serif"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.196"
+        app:layout_constraintHorizontal_bias="0.186"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/modeText"
-        app:layout_constraintVertical_bias="0.233" />
+        app:layout_constraintVertical_bias="0.209" />
 
     <Button
         android:id="@+id/soundControllerBtn"
@@ -123,7 +123,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
+        android:layout_marginBottom="15dp"
         android:background="@drawable/button_shape"
         android:text="Settings"
         android:textSize="20dp"
@@ -137,71 +137,65 @@
 
     <TextView
         android:id="@+id/max_thres_text_id"
-        android:layout_width="54dp"
-        android:layout_height="49dp"
+        android:layout_width="46dp"
+        android:layout_height="21dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
         android:text="@string/MAX_THRESHOLD"
-        android:textSize="24sp"
+        android:textSize="15dp"
         app:layout_constraintBottom_toTopOf="@+id/seekbar_id"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.784"
-        app:layout_constraintStart_toEndOf="@+id/silence_mode_id"
+        app:layout_constraintHorizontal_bias="0.931"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.767" />
+        app:layout_constraintVertical_bias="0.759" />
 
     <TextView
         android:id="@+id/textView5"
-        android:layout_width="33dp"
-        android:layout_height="56dp"
+        android:layout_width="21dp"
+        android:layout_height="29dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
         android:text="@string/MIN_THRESHOLD"
-        android:textSize="24sp"
+        android:textSize="15dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.976"
+        app:layout_constraintHorizontal_bias="0.901"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/seekbar_id"
-        app:layout_constraintVertical_bias="0.321" />
+        app:layout_constraintVertical_bias="0.516" />
 
     <TextView
         android:id="@+id/noise_level_text_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="134dp"
+        android:layout_height="27dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="64dp"
+        android:layout_marginBottom="15dp"
         android:text="Current noise level :"
-        android:textSize="25sp"
-        app:layout_constraintBottom_toTopOf="@+id/soundControllerBtn"
+        android:textSize="15dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.045"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/startBtn"
-        app:layout_constraintVertical_bias="0.963" />
+        app:layout_constraintHorizontal_bias="0.056"
+        app:layout_constraintStart_toEndOf="@+id/soundControllerBtn" />
 
     <TextView
         android:id="@+id/noise_level_id"
-        android:layout_width="107dp"
-        android:layout_height="51dp"
+        android:layout_width="84dp"
+        android:layout_height="24dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="28dp"
+        android:layout_marginBottom="15dp"
         android:text="noise in db here"
-        android:textSize="25sp"
-        app:layout_constraintBottom_toTopOf="@+id/soundControllerBtn"
+        android:textSize="15dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.094"
-        app:layout_constraintStart_toEndOf="@+id/noise_level_text_view"
-        app:layout_constraintTop_toBottomOf="@+id/textView5"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/noise_level_text_view" />
 
     <android.support.constraint.Barrier
         android:id="@+id/barrier"
@@ -216,14 +210,14 @@
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
-        android:text="Threshold"
-        android:textSize="18sp"
+        android:text="Threshold:"
+        android:textSize="15dp"
         app:layout_constraintBottom_toTopOf="@+id/max_thres_text_id"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.913"
+        app:layout_constraintHorizontal_bias="0.975"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/silence_mode_id"
-        app:layout_constraintVertical_bias="0.956" />
+        app:layout_constraintVertical_bias="1.0" />
 
     <TextView
         android:id="@+id/threshold_indicator_id"
@@ -234,12 +228,12 @@
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
         android:text="0 dB"
-        android:textSize="25sp"
+        android:textSize="15dp"
         app:layout_constraintBottom_toTopOf="@+id/textView5"
-        app:layout_constraintEnd_toStartOf="@+id/max_thres_text_id"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintEnd_toEndOf="@+id/seekbar_id"
+        app:layout_constraintHorizontal_bias="0.514"
         app:layout_constraintStart_toEndOf="@+id/startBtn"
         app:layout_constraintTop_toBottomOf="@+id/max_thres_text_id"
-        app:layout_constraintVertical_bias="0.468" />
+        app:layout_constraintVertical_bias="0.395" />
 
 </android.support.constraint.ConstraintLayout>

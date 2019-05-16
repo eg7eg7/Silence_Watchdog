@@ -2,15 +2,14 @@
     <string name="app_name">Silence Watchdog</string>
 
     <string-array name="soundModes">
-        <item>One</item>
-        <item>Two</item>
-        <item>Three</item>
+        <item>shhh</item>
+        <item>shhh_2</item>
+        <item>shhhTwice</item>
+        <item>shutUp</item>
     </string-array>
     <string-array name="modes">
         <item>Classroom</item>
-        <item>Bar</item>
-        <item>Library</item>
-        <item>Sleep</item>
+        <item>Custom</item>
     </string-array>
 
     <string name="title_activity_watchdog_main">WatchdogMainActivity</string>

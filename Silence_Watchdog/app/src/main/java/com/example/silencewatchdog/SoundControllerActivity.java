@@ -3,14 +3,19 @@ package com.example.silencewatchdog;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.Spinner;
+
+import java.net.URI;
+import java.net.URISyntaxException;
 
 public class SoundControllerActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
     private Spinner sound_selector;
@@ -22,23 +27,47 @@ public class SoundControllerActivity extends AppCompatActivity implements Adapte
     Editor prefEditor;
     private float count;
     private SeekBar soundSeekBar;
+    String select;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sound_controller);
-        soundTest = MediaPlayer.create(this, R.raw.shhh);
-        sound_selector = findViewById(R.id.soundSpinner);
+
+
         backBtn = findViewById(R.id.backBtn);
         playBtn = findViewById(R.id.playBtn);
         adapter = ArrayAdapter.createFromResource(this, R.array.soundModes, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        sound_selector.setAdapter(adapter);
-        sound_selector.setOnItemSelectedListener(this);
+
         preferences = getApplicationContext().getSharedPreferences("mySettings", 0);
         prefEditor = preferences.edit();
 
-        setPreferredValues();
+        sound_selector = findViewById(R.id.soundSpinner);
+        sound_selector.setAdapter(adapter);
+        sound_selector.setOnItemSelectedListener(this);
+        sound_selector.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                switch (sound_selector.getSelectedItem()+""){
+                    case "shhh":
+                        soundTest = MediaPlayer.create(getApplicationContext(), R.raw.shhh);
+                        break;
+                    case "shhh_2":
+                            soundTest = MediaPlayer.create(getApplicationContext(), R.raw.shhh_2);
+                            break;
+                    case "shhhTwice":
+                        soundTest = MediaPlayer.create(getApplicationContext(), R.raw.shhhtwice);
+                        break;
+                    case "shutUp":
+                        soundTest = MediaPlayer.create(getApplicationContext(), R.raw.shutup);
+                        break;
 
+                }
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
 
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -74,9 +103,7 @@ public class SoundControllerActivity extends AppCompatActivity implements Adapte
         });
     }
 
-    private void setPreferredValues() {
 
-    }
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
