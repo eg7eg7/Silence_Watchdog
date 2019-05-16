@@ -25,7 +25,6 @@ public class SoundControllerActivity extends AppCompatActivity implements Adapte
     Editor prefEditor;
     private float count;
     private SeekBar soundSeekBar;
-    String select;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,7 +38,6 @@ public class SoundControllerActivity extends AppCompatActivity implements Adapte
 
         preferences = getApplicationContext().getSharedPreferences("silence_app", 0);
         prefEditor = preferences.edit();
-
 
         sound_selector = findViewById(R.id.soundSpinner);
         sound_selector.setAdapter(adapter);
@@ -86,11 +84,11 @@ public class SoundControllerActivity extends AppCompatActivity implements Adapte
         });
 
         soundSeekBar = findViewById(R.id.soundSeekBar);
-        soundSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+         soundSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 count = progress;
-                prefEditor.putString("volume", count+"");
+                prefEditor.putString("volume", progress+"");
                 prefEditor.commit();
             }
 

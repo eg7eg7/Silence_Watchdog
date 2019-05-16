@@ -70,7 +70,7 @@ public class WatchdogMainActivity extends AppCompatActivity implements AdapterVi
 
         preferences = getApplicationContext().getSharedPreferences("silence_app", 0);
         prefEditor = preferences.edit();
-        threshold_Seeker.setProgress(100);
+        threshold_Seeker.setProgress(60);
         threshold_Seeker.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress,
@@ -154,7 +154,8 @@ public class WatchdogMainActivity extends AppCompatActivity implements AdapterVi
                 break;
 
         }
-        quiet_sound.setVolume(volume,volume);
+        float volume_d = volume/100f;
+        quiet_sound.setVolume(volume_d,volume_d);
         int sampleRate = 44100;
         try {
             bufferSize = AudioRecord.getMinBufferSize(sampleRate, AudioFormat.CHANNEL_IN_MONO,
