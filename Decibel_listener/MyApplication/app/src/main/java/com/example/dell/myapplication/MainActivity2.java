@@ -3,6 +3,8 @@ package com.example.dell.myapplication;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.media.AudioFormat;
+import android.media.AudioRecord;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.Bundle;
@@ -31,22 +33,24 @@ public class MainActivity2 extends AppCompatActivity {
     private Thread thread;
     private boolean isThreadRun = true;
     float volume = 10000;
+    private int bufferSize;
     private SoundText text;
 
     private RecordButton recordButton = null;
+    private AudioRecord audio = null;
     private MediaRecorder recorder = null;
 
     private MediaPlayer player = null;
-
+    private double amp;
     private TextView text_number = null;
-
+    private int SAMPLE_DELAY = 75;
     // Requesting permission to RECORD_AUDIO
     private boolean permissionToRecordAccepted = false;
-    private String [] permissions = {Manifest.permission.RECORD_AUDIO};
+    private String[] permissions = {Manifest.permission.RECORD_AUDIO};
 
-    final Handler handler = new Handler(){
+    final Handler handler = new Handler() {
         @Override
-        public void handleMessage(Message msg){
+        public void handleMessage(Message msg) {
             super.handleMessage(msg);
             DecimalFormat df1 = new DecimalFormat("####.0");
 
@@ -56,12 +60,12 @@ public class MainActivity2 extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch (requestCode){
+        switch (requestCode) {
             case REQUEST_RECORD_AUDIO_PERMISSION:
-                permissionToRecordAccepted  = grantResults[0] == PackageManager.PERMISSION_GRANTED;
+                permissionToRecordAccepted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
                 break;
         }
-        if (!permissionToRecordAccepted ) finish();
+        if (!permissionToRecordAccepted) finish();
 
     }
 
@@ -74,68 +78,75 @@ public class MainActivity2 extends AppCompatActivity {
     }
 
     private void startRecording() {
-        isThreadRun = true;
-        recorder = new MediaRecorder();
-        recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-        //recorder.setOutputFile(fileName);
-        recorder.setOutputFile("/dev/null");
-        recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
 
+        int sampleRate = 44100;
         try {
-            recorder.prepare();
-        } catch (IOException e) {
-            Log.e(LOG_TAG, "prepare() failed");
+            bufferSize = AudioRecord.getMinBufferSize(sampleRate, AudioFormat.CHANNEL_IN_MONO,
+                    AudioFormat.ENCODING_PCM_16BIT);
+            audio = new AudioRecord(MediaRecorder.AudioSource.MIC, sampleRate,
+                    AudioFormat.CHANNEL_IN_MONO,
+                    AudioFormat.ENCODING_PCM_16BIT, bufferSize);
+        } catch (Exception e) {
+            android.util.Log.e("TrackingFlow", "Exception", e);
         }
 
-        recorder.start();
 
-        getAmplitude();
-
-        //double a=Math.log10(recorder.getMaxAmplitude() / 2700.0);
+        isThreadRun = true;
+        audio.startRecording();
     }
 
     private void startListenAudio() {
+
+
         thread = new Thread(new Runnable() {
-            @Override
             public void run() {
-                while (isThreadRun) {
-                    //if(bListener) {
-                    volume = recorder.getMaxAmplitude();  //Get the sound pressure value
-                    if (volume > 0 && volume < 1000000) {
-                        World.setDbCount(20 * (float) (Math.log10(volume/0.45)));  //Change the sound pressure value to the decibel value
-                        // Update with thread
-                        Message message = new Message();
-                        message.what = 1;
-                        //handler.sendMessage(message);
-                        //TextView t1 = findViewById(R.id.textView);
-                        //t1.setText((20 * (float) (Math.log10(volume))) + "");
-                        //playButton.setText((20 * (float) (Math.log10(volume))) + "");
+                while (thread != null && !thread.isInterrupted()) {
+                    //Let's make the thread sleep for a the approximate sampling time
+                    try {
+                        Thread.sleep(SAMPLE_DELAY);
+                    } catch (InterruptedException ie) {
+                        ie.printStackTrace();
+                    }
+                    readAudioBuffer();//After this call we can get the last value assigned to the lastLevel variable
 
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                text.setText(World.dbCount+"");
-                            }
-                        });
-                   }
+                    runOnUiThread(new Runnable() {
 
-                    // }
-                    //if(refreshed){
-                    //    Thread.sleep(1200);
-                    //    refreshed=false;
-                    //}else{
-                    //    Thread.sleep(200);
-                    // }
+                        @Override
+                        public void run() {
+                            text.setText(amp + "");
+                        }
+                    });
                 }
             }
         });
         thread.start();
     }
+    private void readAudioBuffer() {
 
+        try {
+            short[] buffer = new short[bufferSize];
+
+            int bufferReadResult;
+
+            if (audio != null) {
+
+                // Sense the voice...
+                bufferReadResult = audio.read(buffer, 0, bufferSize);
+                double sumLevel = 0;
+                for (int i = 0; i < bufferReadResult; i++) {
+                    sumLevel += buffer[i];
+                }
+                amp = Math.abs((sumLevel / bufferReadResult));
+                amp = 20 * (float) (Math.log10(amp/0.05));
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
     public double getAmplitude() {
         if (recorder != null)
-            return  recorder.getMaxAmplitude();
+            return recorder.getMaxAmplitude();
         else
             return 0;
 
@@ -143,10 +154,7 @@ public class MainActivity2 extends AppCompatActivity {
 
     private void stopRecording() {
         isThreadRun = false;
-        //thread = null;
-        recorder.stop();
-        recorder.release();
-        recorder = null;
+        audio.stop();
 
     }
 
@@ -164,7 +172,7 @@ public class MainActivity2 extends AppCompatActivity {
                     setText("Start recording");
                 }
                 mStartRecording = !mStartRecording;
-               // setText(Math.log10(recorder.getMaxAmplitude() / 2700.0)+"");
+                // setText(Math.log10(recorder.getMaxAmplitude() / 2700.0)+"");
 
             }
         };
