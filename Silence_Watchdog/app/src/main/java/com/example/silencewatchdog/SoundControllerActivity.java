@@ -48,32 +48,64 @@ public class SoundControllerActivity extends AppCompatActivity implements Adapte
                 switch (sound_selector.getSelectedItem()+""){
                     case "shhh":
                         soundTest = MediaPlayer.create(getApplicationContext(), R.raw.shhh);
-
                         prefEditor.putString("current_sound", "shhh");
                         prefEditor.commit();
                         break;
                     case "shhh_2":
                             soundTest = MediaPlayer.create(getApplicationContext(), R.raw.shhh_2);
-
                         prefEditor.putString("current_sound", "shhh_2");
                         prefEditor.commit();
                             break;
-                    case "shhhTwice":
+                    case "shhhtwice":
                         soundTest = MediaPlayer.create(getApplicationContext(), R.raw.shhhtwice);
-                        prefEditor.putString("current_sound", "shhhTwice");
+                        prefEditor.putString("current_sound", "shhhtwice");
                         prefEditor.commit();
                         break;
-                    case "shutUp":
-                        prefEditor.putString("current_sound", "shutUp");
+                    case "shutup_man":
+                        prefEditor.putString("current_sound", "shutup_man");
                         prefEditor.commit();
-                        soundTest = MediaPlayer.create(getApplicationContext(), R.raw.shutup);
+                        soundTest = MediaPlayer.create(getApplicationContext(), R.raw.shutup_man);
                         break;
-                    case "shay":
-                        prefEditor.putString("current_sound", "shay");
+                    case "powerfulshhh":
+                        prefEditor.putString("current_sound", "powerfulshhh");
                         prefEditor.commit();
-                        soundTest = MediaPlayer.create(getApplicationContext(), R.raw.shay);
+                        soundTest = MediaPlayer.create(getApplicationContext(), R.raw.powerfulshhh);
                         break;
-
+                    case "pullyourselftogether_man":
+                        prefEditor.putString("current_sound", "pullyourselftogether_man");
+                        prefEditor.commit();
+                        soundTest = MediaPlayer.create(getApplicationContext(), R.raw.pullyourselftogether_man);
+                        break;
+                    case "pullyourselftogether_women":
+                        prefEditor.putString("current_sound", "pullyourselftogether_women");
+                        prefEditor.commit();
+                        soundTest = MediaPlayer.create(getApplicationContext(), R.raw.pullyourselftogether_women);
+                        break;
+                    case "shhh_man":
+                        prefEditor.putString("current_sound", "shhh_man");
+                        prefEditor.commit();
+                        soundTest = MediaPlayer.create(getApplicationContext(), R.raw.shhh_man);
+                        break;
+                    case "shutup_women":
+                        prefEditor.putString("current_sound", "shutup_women");
+                        prefEditor.commit();
+                        soundTest = MediaPlayer.create(getApplicationContext(), R.raw.shutup_women);
+                        break;
+                    case "stoptalking":
+                        prefEditor.putString("current_sound", "stoptalking");
+                        prefEditor.commit();
+                        soundTest = MediaPlayer.create(getApplicationContext(), R.raw.stoptalking);
+                        break;
+                    case "stoptalking_women":
+                        prefEditor.putString("current_sound", "stoptalking_women");
+                        prefEditor.commit();
+                        soundTest = MediaPlayer.create(getApplicationContext(), R.raw.stoptalking_women);
+                        break;
+                    case "stopthat_women":
+                        prefEditor.putString("current_sound", "stopthat_women");
+                        prefEditor.commit();
+                        soundTest = MediaPlayer.create(getApplicationContext(), R.raw.stopthat_women);
+                        break;
                 }
             }
             @Override

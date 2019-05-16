@@ -4,9 +4,16 @@
     <string-array name="soundModes">
         <item>shhh</item>
         <item>shhh_2</item>
-        <item>shhhTwice</item>
-        <item>shutUp</item>
-        <item>shay</item>
+        <item>shhhtwice</item>
+        <item>powerfulshhh</item>
+        <item>pullyourselftogether_man</item>
+        <item>pullyourselftogether_women</item>
+        <item>shhh_man</item>
+        <item>shutup_man</item>
+        <item>shutup_women</item>
+        <item>stoptalking</item>
+        <item>stoptalking_women</item>
+        <item>stopthat_women</item>
     </string-array>
     <string-array name="modes">
         <item>Classroom</item>

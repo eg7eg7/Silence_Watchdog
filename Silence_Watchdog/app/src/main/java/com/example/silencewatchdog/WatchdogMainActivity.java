@@ -32,6 +32,9 @@ public class WatchdogMainActivity extends AppCompatActivity implements AdapterVi
     private Button soundControlBtn;
     private ArrayAdapter<CharSequence> adapter;
     private SeekBar threshold_Seeker;
+    private TextView Threshold_text;
+    private TextView max_thres_text_id;
+    private TextView textView5;
     private TextView threshold_indicator_text;
     private TextView noise_level = null;
     private Thread thread;
@@ -64,6 +67,7 @@ public class WatchdogMainActivity extends AppCompatActivity implements AdapterVi
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mode_selector.setAdapter(adapter);
         mode_selector.setOnItemSelectedListener(this);
+
         threshold_Seeker = findViewById(R.id.seekbar_id);
         threshold_indicator_text = findViewById(R.id.threshold_indicator_id);
         noise_level = findViewById(R.id.noise_level_id);
@@ -88,6 +92,36 @@ public class WatchdogMainActivity extends AppCompatActivity implements AdapterVi
             public void onStopTrackingTouch(SeekBar seekBar) {
             }
 
+        });
+        Threshold_text = findViewById(R.id.Threshold_text);
+        max_thres_text_id = findViewById(R.id.max_thres_text_id);
+        textView5 = findViewById(R.id.textView5);
+        mode_selector.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                Log.d("myTag", mode_selector.getSelectedItem() + "");
+
+                if(mode_selector.getSelectedItem().equals("Classroom")){
+                    Log.d("myTag", "Hello");
+                    threshold_Seeker.setVisibility(View.GONE);
+                    Threshold_text.setVisibility(View.GONE);
+                    max_thres_text_id.setVisibility(View.GONE);
+                    textView5.setVisibility(View.GONE);
+                    threshold_indicator_text.setVisibility(View.GONE);
+                }
+                else{
+                    threshold_Seeker.setVisibility(View.VISIBLE);
+                    Threshold_text.setVisibility(View.VISIBLE);
+                    max_thres_text_id.setVisibility(View.VISIBLE);
+                    textView5.setVisibility(View.VISIBLE);
+                    threshold_indicator_text.setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
         });
         soundControlBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -146,16 +180,33 @@ public class WatchdogMainActivity extends AppCompatActivity implements AdapterVi
             case "shhh_2":
                 quiet_sound = MediaPlayer.create(getApplicationContext(), R.raw.shhh_2);
                 break;
-            case "shhhTwice":
+            case "shhhtwice":
                 quiet_sound = MediaPlayer.create(getApplicationContext(), R.raw.shhhtwice);
                 break;
-            case "shutUp":
-                quiet_sound = MediaPlayer.create(getApplicationContext(), R.raw.shutup);
+            case "shutup_man":
+                quiet_sound = MediaPlayer.create(getApplicationContext(), R.raw.shutup_man);
                 break;
-            case "shay":
-                quiet_sound = MediaPlayer.create(getApplicationContext(), R.raw.shay);
+            case "powerfulshhh":
+                quiet_sound = MediaPlayer.create(getApplicationContext(), R.raw.powerfulshhh);
                 break;
-
+            case "pullyourselftogether_man":
+                quiet_sound = MediaPlayer.create(getApplicationContext(), R.raw.pullyourselftogether_man);
+                break;
+            case "pullyourselftogether_women":
+                quiet_sound = MediaPlayer.create(getApplicationContext(), R.raw.pullyourselftogether_women);
+                break;
+            case "shhh_man":
+                quiet_sound = MediaPlayer.create(getApplicationContext(), R.raw.shhh_man);
+                break;
+            case "shutup_women":
+                quiet_sound = MediaPlayer.create(getApplicationContext(), R.raw.shutup_women);
+                break;
+            case "stoptalking":
+                quiet_sound = MediaPlayer.create(getApplicationContext(), R.raw.stoptalking);
+                break;
+            case "stopthat_women":
+                quiet_sound = MediaPlayer.create(getApplicationContext(), R.raw.stopthat_women);
+                break;
         }
         float volume_d = volume/100f;
         quiet_sound.setVolume(volume_d,volume_d);
