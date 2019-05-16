@@ -103,7 +103,7 @@ public class MainActivity2 extends AppCompatActivity {
                     //if(bListener) {
                     volume = recorder.getMaxAmplitude();  //Get the sound pressure value
                     if (volume > 0 && volume < 1000000) {
-                        World.setDbCount(20 * (float) (Math.log10(volume)));  //Change the sound pressure value to the decibel value
+                        World.setDbCount(20 * (float) (Math.log10(volume/0.45)));  //Change the sound pressure value to the decibel value
                         // Update with thread
                         Message message = new Message();
                         message.what = 1;
