@@ -3,6 +3,7 @@ package com.example.silencewatchdog;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
+import android.util.Log;
 
 public class AudioAnalyzer {
     private static final int SAMPLE_DELAY = 75;
@@ -26,28 +27,30 @@ public class AudioAnalyzer {
     }
 
 
-    public AudioAnalyzer() {
-        findAudioRecord();
-    }
+
 
     public void stop() {
         if (thread != null)
             thread.interrupt();
         thread = null;
+
+        audio.stop();
+        audio.release();
     }
 
     public void start() {
-
+        findAudioRecord();
         thread = new Thread(new Runnable() {
             public void run() {
                 while (thread != null && !thread.isInterrupted()) {
                     //Let's make the thread sleep for a the approximate sampling time
+                    readAudioBuffer();//After this call we can get the last value assigned to the lastLevel variable
+
                     try {
                         Thread.sleep(SAMPLE_DELAY);
                     } catch (InterruptedException ie) {
                         ie.printStackTrace();
                     }
-                    readAudioBuffer();//After this call we can get the last value assigned to the lastLevel variable
 
 
                 }
@@ -70,10 +73,17 @@ public class AudioAnalyzer {
 
                 // Sense the voice...
                 bufferReadResult = audio.read(buffer, 0, bufferSize);
+                Log.d("AudioAnalyzer", "readAudioBuffer: "+bufferReadResult);
+
+                if(bufferReadResult == 0)
+                {
+                    amplitude = 0;
+                }
                 double sumLevel = 0;
                 for (int i = 0; i < bufferReadResult; i++) {
                     sumLevel += buffer[i];
                 }
+
                 amplitude = Math.abs((sumLevel / bufferReadResult));
 
             }
