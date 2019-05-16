@@ -111,6 +111,7 @@
         android:layout_marginBottom="8dp"
         android:max="100"
         android:maxHeight="5dp"
+        android:progress="80"
         android:outlineAmbientShadowColor="@color/colorPrimary"
         android:outlineSpotShadowColor="@android:color/black"
         android:progressDrawable="@color/colorBlue"

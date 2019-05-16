@@ -31,6 +31,7 @@ public class SoundControllerActivity extends AppCompatActivity implements Adapte
         setContentView(R.layout.activity_sound_controller);
 
 
+
         backBtn = findViewById(R.id.backBtn);
         playBtn = findViewById(R.id.playBtn);
         adapter = ArrayAdapter.createFromResource(this, R.array.soundModes, android.R.layout.simple_spinner_item);
@@ -121,6 +122,7 @@ public class SoundControllerActivity extends AppCompatActivity implements Adapte
         });
 
         soundSeekBar = findViewById(R.id.soundSeekBar);
+        count = soundSeekBar.getProgress();
          soundSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -143,6 +145,7 @@ public class SoundControllerActivity extends AppCompatActivity implements Adapte
             @Override
             public void onClick(View v) {
                 float vol = count / 100f;
+                Log.d("myTag", vol + "");
                 soundTest.setVolume(vol,vol);
                 soundTest.start();
             }
