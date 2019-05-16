@@ -1,5 +1,6 @@
 package com.example.silencewatchdog;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.media.MediaPlayer;
@@ -13,9 +14,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.Spinner;
-
-import java.net.URI;
-import java.net.URISyntaxException;
 
 public class SoundControllerActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
     private Spinner sound_selector;
@@ -39,8 +37,9 @@ public class SoundControllerActivity extends AppCompatActivity implements Adapte
         adapter = ArrayAdapter.createFromResource(this, R.array.soundModes, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
-        preferences = getApplicationContext().getSharedPreferences("mySettings", 0);
+        preferences = getApplicationContext().getSharedPreferences("silence_app", 0);
         prefEditor = preferences.edit();
+
 
         sound_selector = findViewById(R.id.soundSpinner);
         sound_selector.setAdapter(adapter);
@@ -51,14 +50,24 @@ public class SoundControllerActivity extends AppCompatActivity implements Adapte
                 switch (sound_selector.getSelectedItem()+""){
                     case "shhh":
                         soundTest = MediaPlayer.create(getApplicationContext(), R.raw.shhh);
+
+                        prefEditor.putString("current_sound", "shhh");
+                        prefEditor.commit();
                         break;
                     case "shhh_2":
                             soundTest = MediaPlayer.create(getApplicationContext(), R.raw.shhh_2);
+
+                        prefEditor.putString("current_sound", "shhh_2");
+                        prefEditor.commit();
                             break;
                     case "shhhTwice":
                         soundTest = MediaPlayer.create(getApplicationContext(), R.raw.shhhtwice);
+                        prefEditor.putString("current_sound", "shhhTwice");
+                        prefEditor.commit();
                         break;
                     case "shutUp":
+                        prefEditor.putString("current_sound", "shutUp");
+                        prefEditor.commit();
                         soundTest = MediaPlayer.create(getApplicationContext(), R.raw.shutup);
                         break;
 
@@ -81,6 +90,8 @@ public class SoundControllerActivity extends AppCompatActivity implements Adapte
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 count = progress;
+                prefEditor.putString("volume", count+"");
+                prefEditor.commit();
             }
 
             @Override
