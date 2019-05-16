@@ -1,6 +1,5 @@
 package com.example.silencewatchdog;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -8,7 +7,6 @@ import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
-import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -23,8 +21,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.Manifest;
 
-import java.net.URI;
-
 public class WatchdogMainActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
     private MediaPlayer quiet_sound;
     private Spinner mode_selector;
@@ -32,9 +28,6 @@ public class WatchdogMainActivity extends AppCompatActivity implements AdapterVi
     private Button soundControlBtn;
     private ArrayAdapter<CharSequence> adapter;
     private SeekBar threshold_Seeker;
-    private TextView Threshold_text;
-    private TextView max_thres_text_id;
-    private TextView textView5;
     private TextView threshold_indicator_text;
     private TextView noise_level = null;
     private Thread thread;
@@ -42,7 +35,6 @@ public class WatchdogMainActivity extends AppCompatActivity implements AdapterVi
     private double current_threshold;
     private static final int REQUEST_RECORD_AUDIO_PERMISSION = 200;
     private SharedPreferences preferences;
-    // Requesting permission to RECORD_AUDIO
     private boolean permissionToRecordAccepted = false;
     private String[] permissions = {Manifest.permission.RECORD_AUDIO};
     private SharedPreferences.Editor prefEditor;
@@ -51,8 +43,12 @@ public class WatchdogMainActivity extends AppCompatActivity implements AdapterVi
     private AudioRecord audio = null;
     private double amp;
     private int SAMPLE_DELAY = 75;
-
-
+    private short[] buffer;
+    private EnergyFilter enegyfilter;
+    private int buffer_size_read;
+    private TextView Threshold_text;
+    private TextView max_thres_text_id;
+    private TextView textView5;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,11 +63,10 @@ public class WatchdogMainActivity extends AppCompatActivity implements AdapterVi
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mode_selector.setAdapter(adapter);
         mode_selector.setOnItemSelectedListener(this);
-
         threshold_Seeker = findViewById(R.id.seekbar_id);
         threshold_indicator_text = findViewById(R.id.threshold_indicator_id);
         noise_level = findViewById(R.id.noise_level_id);
-
+        enegyfilter = new EnergyFilter();
         preferences = getApplicationContext().getSharedPreferences("silence_app", 0);
         prefEditor = preferences.edit();
         threshold_Seeker.setProgress(60);
@@ -147,6 +142,7 @@ public class WatchdogMainActivity extends AppCompatActivity implements AdapterVi
             }
         });
     }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -208,8 +204,8 @@ public class WatchdogMainActivity extends AppCompatActivity implements AdapterVi
                 quiet_sound = MediaPlayer.create(getApplicationContext(), R.raw.stopthat_women);
                 break;
         }
-        float volume_d = volume/100f;
-        quiet_sound.setVolume(volume_d,volume_d);
+        float volume_d = volume / 100f;
+        quiet_sound.setVolume(volume_d, volume_d);
         int sampleRate = 44100;
         try {
             bufferSize = AudioRecord.getMinBufferSize(sampleRate, AudioFormat.CHANNEL_IN_MONO,
@@ -252,34 +248,46 @@ public class WatchdogMainActivity extends AppCompatActivity implements AdapterVi
     }
 
     private void RequestSilence() {
-        if(current_threshold < amp)
-        {
-            quiet_sound.start();
+        String mode = mode_selector.getSelectedItem() + "";
+        switch (mode) {
+            case "Custom":
+                updateAmplitude(buffer_size_read);
+                if (current_threshold < amp) {
+                    quiet_sound.start();
+                }
+                break;
+            case "Classroom":
+
+                if (enegyfilter.nextSample(buffer)) {
+                    quiet_sound.start();
+                }
+                break;
         }
+
     }
 
     private void readAudioBuffer() {
 
         try {
-            short[] buffer = new short[bufferSize];
-
-            int bufferReadResult;
-
+            buffer = new short[bufferSize];
             if (audio != null) {
-
                 // Sense the voice...
-                bufferReadResult = audio.read(buffer, 0, bufferSize);
-                double sumLevel = 0;
-                for (int i = 0; i < bufferReadResult; i++) {
-                    sumLevel += buffer[i];
-                }
-                amp = Math.abs((sumLevel / bufferReadResult));
-                amp = getDecibels();
+                buffer_size_read = audio.read(buffer, 0, bufferSize);
             }
 
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public void updateAmplitude(int bufferReadNum) {
+
+        double sumLevel = 0;
+        for (int i = 0; i < bufferReadNum; i++) {
+            sumLevel += buffer[i];
+        }
+        amp = Math.abs((sumLevel / bufferReadNum));
+        amp = getDecibels();
     }
 
     public double getDecibels() {
