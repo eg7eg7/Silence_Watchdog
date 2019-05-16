@@ -9,7 +9,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MakeSoundActivity"></activity>
         <activity android:name=".SoundControllerActivity" />
         <activity android:name=".WatchdogMainActivity">
             <intent-filter>

@@ -18,4 +18,5 @@
     <string name="dummy_content">DUMMY\nCONTENT</string>
     <string name="MAX_THRESHOLD">100</string>
     <string name="MIN_THRESHOLD">0</string>
+
 </resources>
