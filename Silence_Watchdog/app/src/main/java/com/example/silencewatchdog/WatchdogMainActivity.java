@@ -42,13 +42,15 @@ public class WatchdogMainActivity extends AppCompatActivity implements AdapterVi
     private float volume = (float) 100;
     private AudioRecord audio = null;
     private double amp;
-    private int SAMPLE_DELAY = 75;
+    private int SAMPLE_DELAY = 300;
     private short[] buffer;
     private EnergyFilter enegyfilter;
     private int buffer_size_read;
     private TextView Threshold_text;
     private TextView max_thres_text_id;
     private TextView textView5;
+    private final int DELAY_GAP = 5000;
+    private final int INITIAL_THRESHOLD = 50;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,17 +68,19 @@ public class WatchdogMainActivity extends AppCompatActivity implements AdapterVi
         threshold_Seeker = findViewById(R.id.seekbar_id);
         threshold_indicator_text = findViewById(R.id.threshold_indicator_id);
         noise_level = findViewById(R.id.noise_level_id);
-        enegyfilter = new EnergyFilter();
         preferences = getApplicationContext().getSharedPreferences("silence_app", 0);
         prefEditor = preferences.edit();
-        threshold_Seeker.setProgress(60);
+        threshold_Seeker.setProgress(INITIAL_THRESHOLD);
+        current_threshold = INITIAL_THRESHOLD;
+        threshold_indicator_text.setText(threshold_Seeker.getProgress()+"");
         threshold_Seeker.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress,
                                           boolean fromUser) {
                 //set textView's text
-                threshold_indicator_text.setText("" + progress);
+
                 current_threshold = progress;
+                threshold_indicator_text.setText("" + progress);
             }
 
             @Override
@@ -133,6 +137,7 @@ public class WatchdogMainActivity extends AppCompatActivity implements AdapterVi
                 onRecord(mStartRecording);
                 if (mStartRecording) {
                     ToggleStartStopButton.setText("Stop");
+                    enegyfilter = new EnergyFilter();
                     startListenAudio();
 
                 } else {
@@ -164,7 +169,14 @@ public class WatchdogMainActivity extends AppCompatActivity implements AdapterVi
         }
     }
 
+    private void stopRecording() {
+        isThreadRun = false;
+        thread.interrupt();
+        audio.stop();
+
+    }
     private void startRecording() {
+        isThreadRun = true;
         String vol_string = preferences.getString("volume", "100");
         volume = Float.parseFloat(vol_string);
 
@@ -218,7 +230,6 @@ public class WatchdogMainActivity extends AppCompatActivity implements AdapterVi
         }
 
 
-        isThreadRun = true;
         audio.startRecording();
     }
 
@@ -241,6 +252,8 @@ public class WatchdogMainActivity extends AppCompatActivity implements AdapterVi
                             noise_level.setText(amp + "");
                         }
                     });
+
+
                 }
             }
         });
@@ -248,24 +261,38 @@ public class WatchdogMainActivity extends AppCompatActivity implements AdapterVi
     }
 
     private void RequestSilence() {
+        if (!isThreadRun)
+            return;
         String mode = mode_selector.getSelectedItem() + "";
+        updateAmplitude(buffer_size_read);
+
         switch (mode) {
             case "Custom":
-                updateAmplitude(buffer_size_read);
+                //updateAmplitude(buffer_size_read);
                 if (current_threshold < amp) {
-                    quiet_sound.start();
+                    playSound();
                 }
                 break;
             case "Classroom":
 
                 if (enegyfilter.nextSample(buffer)) {
-                    quiet_sound.start();
+                    playSound();
                 }
                 break;
         }
 
     }
+    public void playSound()
+    {
+        int k;
+        quiet_sound.start();
 
+        try {
+            thread.sleep(DELAY_GAP);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
     private void readAudioBuffer() {
 
         try {
@@ -294,11 +321,6 @@ public class WatchdogMainActivity extends AppCompatActivity implements AdapterVi
         return 20 * (float) (Math.log10(amp / 0.1));
     }
 
-    private void stopRecording() {
-        isThreadRun = false;
-        audio.stop();
-
-    }
 
 
     @Override
