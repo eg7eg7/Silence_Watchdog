@@ -7,33 +7,26 @@
     android:background="@color/colorSilver"
     tools:context=".WatchdogMainActivity">
 
-    <TextView
+    <ImageView
         android:id="@+id/Title"
         style="@style/Title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="229dp"
+        android:layout_height="94dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
+        android:src="@drawable/icon"
         android:text="Silence Watchdog"
         android:textSize="40dp"
         android:typeface="serif"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.421"
+        app:layout_constraintHorizontal_bias="0.379"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.033" />
+        app:layout_constraintVertical_bias="0.013" />
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="97dp"
-        android:layout_height="63dp"
-        android:layout_centerInParent="true"
-        android:src="@drawable/logo"
-        tools:layout_editor_absoluteX="310dp"
-        tools:layout_editor_absoluteY="30dp" />
     <TextView
         android:id="@+id/modeText"
         android:layout_width="90dp"
@@ -50,7 +43,7 @@
         app:layout_constraintHorizontal_bias="0.14"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/Title"
-        app:layout_constraintVertical_bias="0.093" />
+        app:layout_constraintVertical_bias="0.049" />
 
     <Spinner
         android:id="@+id/silence_mode_id"
@@ -62,10 +55,43 @@
         android:layout_marginBottom="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.23"
         app:layout_constraintStart_toEndOf="@+id/modeText"
         app:layout_constraintTop_toBottomOf="@+id/Title"
-        app:layout_constraintVertical_bias="0.092"></Spinner>
+        app:layout_constraintVertical_bias="0.052"></Spinner>
+
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="94dp"
+        android:layout_height="34dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:text="Lecturer: "
+        android:textSize="20dp"
+        android:typeface="serif"
+        app:layout_constraintBottom_toTopOf="@+id/startBtn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.142"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/modeText"
+        app:layout_constraintVertical_bias="0.157" />
+
+    <Spinner
+        android:id="@+id/lecturer_spinner"
+        android:layout_width="125dp"
+        android:layout_height="35dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/startBtn"
+        app:layout_constraintEnd_toEndOf="@+id/barrier"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/textView4"
+        app:layout_constraintTop_toBottomOf="@+id/silence_mode_id"
+        app:layout_constraintVertical_bias="0.141" />
 
     <SeekBar
         android:id="@+id/seekbar_id"
@@ -106,7 +132,7 @@
         app:layout_constraintHorizontal_bias="0.041"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/modeText"
-        app:layout_constraintVertical_bias="0.3" />
+        app:layout_constraintVertical_bias="0.38" />
 
     <Button
         android:id="@+id/report_false_record_btn"
