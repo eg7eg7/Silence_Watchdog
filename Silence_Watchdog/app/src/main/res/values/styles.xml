@@ -22,6 +22,13 @@
 
     </style>
 
+    <style name="toast">
+        <item name="colorBackground">#94ffab</item>
+        <item name="textColor">#000</item>
+        <item name="strokeColor">#000</item>
+        <item name="strokeWidth">3dp</item>
+    </style>
+
     <style name="FullscreenTheme" parent="AppTheme">
         <item name="android:actionBarStyle">@style/FullscreenActionBarStyle</item>
         <item name="android:windowActionBarOverlay">true</item>

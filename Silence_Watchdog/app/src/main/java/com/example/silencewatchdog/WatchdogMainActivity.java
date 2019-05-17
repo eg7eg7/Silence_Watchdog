@@ -20,12 +20,19 @@ import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.Manifest;
+import android.widget.Toast;
+
+import com.muddzdev.styleabletoastlibrary.StyleableToast;
+
+import java.text.DecimalFormat;
+import com.muddzdev.styleabletoastlibrary.StyleableToast;
 
 public class WatchdogMainActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
     private MediaPlayer quiet_sound;
     private Spinner mode_selector;
     private Button ToggleStartStopButton;
     private Button soundControlBtn;
+    private Button report_false_record_btn;
     private ArrayAdapter<CharSequence> adapter;
     private SeekBar threshold_Seeker;
     private TextView threshold_indicator_text;
@@ -44,7 +51,7 @@ public class WatchdogMainActivity extends AppCompatActivity implements AdapterVi
     private double amp;
     private int SAMPLE_DELAY = 300;
     private short[] buffer;
-    private EnergyFilter enegyfilter;
+    private EnergyFilter energyfilter;
     private int buffer_size_read;
     private TextView Threshold_text;
     private TextView max_thres_text_id;
@@ -95,6 +102,14 @@ public class WatchdogMainActivity extends AppCompatActivity implements AdapterVi
         Threshold_text = findViewById(R.id.Threshold_text);
         max_thres_text_id = findViewById(R.id.max_thres_text_id);
         textView5 = findViewById(R.id.textView5);
+        report_false_record_btn = findViewById(R.id.report_false_record_btn);
+        report_false_record_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                energyfilter.reportFalsePositive();
+                showToast();
+            }
+        });
         mode_selector.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -107,6 +122,7 @@ public class WatchdogMainActivity extends AppCompatActivity implements AdapterVi
                     max_thres_text_id.setVisibility(View.GONE);
                     textView5.setVisibility(View.GONE);
                     threshold_indicator_text.setVisibility(View.GONE);
+                    report_false_record_btn.setVisibility(View.GONE);
                 }
                 else{
                     threshold_Seeker.setVisibility(View.VISIBLE);
@@ -114,6 +130,7 @@ public class WatchdogMainActivity extends AppCompatActivity implements AdapterVi
                     max_thres_text_id.setVisibility(View.VISIBLE);
                     textView5.setVisibility(View.VISIBLE);
                     threshold_indicator_text.setVisibility(View.VISIBLE);
+                    report_false_record_btn.setVisibility(View.GONE);
                 }
             }
 
@@ -136,16 +153,19 @@ public class WatchdogMainActivity extends AppCompatActivity implements AdapterVi
             public void onClick(View v) {
                 onRecord(mStartRecording);
                 if (mStartRecording) {
+                    report_false_record_btn.setVisibility(View.VISIBLE);
                     ToggleStartStopButton.setText("Stop");
-                    enegyfilter = new EnergyFilter();
+                    energyfilter = new EnergyFilter();
                     startListenAudio();
 
                 } else {
+                    report_false_record_btn.setVisibility(View.GONE);
                     ToggleStartStopButton.setText("Start");
                 }
                 mStartRecording = !mStartRecording;
             }
         });
+
     }
 
     @Override
@@ -249,7 +269,7 @@ public class WatchdogMainActivity extends AppCompatActivity implements AdapterVi
 
                         @Override
                         public void run() {
-                            noise_level.setText(amp + "");
+                            noise_level.setText(new DecimalFormat("##.##").format(amp));
                         }
                     });
 
@@ -275,7 +295,7 @@ public class WatchdogMainActivity extends AppCompatActivity implements AdapterVi
                 break;
             case "Classroom":
 
-                if (enegyfilter.nextSample(buffer)) {
+                if (energyfilter.nextSample(buffer)) {
                     playSound();
                 }
                 break;
@@ -332,5 +352,7 @@ public class WatchdogMainActivity extends AppCompatActivity implements AdapterVi
     public void onNothingSelected(AdapterView<?> parent) {
 
     }
-
+    public void showToast(){
+        StyleableToast.makeText(this, "You Reported on a false record", R.style.toast).show();
+    }
 }
