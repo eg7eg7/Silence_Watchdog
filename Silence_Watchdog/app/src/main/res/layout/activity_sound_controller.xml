@@ -44,7 +44,7 @@
         app:layout_constraintHorizontal_bias="0.033"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView"
-        app:layout_constraintVertical_bias="0.165" />
+        app:layout_constraintVertical_bias="0.039" />
 
     <Spinner
         android:id="@+id/soundSpinner"
@@ -59,7 +59,7 @@
         app:layout_constraintHorizontal_bias="0.14"
         app:layout_constraintStart_toEndOf="@+id/textView2"
         app:layout_constraintTop_toBottomOf="@+id/textView"
-        app:layout_constraintVertical_bias="0.162">
+        app:layout_constraintVertical_bias="0.038">
 
     </Spinner>
 
@@ -80,7 +80,7 @@
         app:layout_constraintHorizontal_bias="0.491"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/shuffle_check_box"
-        app:layout_constraintVertical_bias="0.252" />
+        app:layout_constraintVertical_bias="0.421" />
 
     <TextView
         android:id="@+id/textView3"
@@ -96,10 +96,10 @@
         android:typeface="serif"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.04"
+        app:layout_constraintHorizontal_bias="0.033"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView2"
-        app:layout_constraintVertical_bias="0.041" />
+        app:layout_constraintVertical_bias="0.035" />
 
     <SeekBar
         android:id="@+id/soundSeekBar"
@@ -111,14 +111,14 @@
         android:layout_marginBottom="8dp"
         android:max="100"
         android:maxHeight="5dp"
-        android:progress="80"
         android:outlineAmbientShadowColor="@color/colorPrimary"
         android:outlineSpotShadowColor="@android:color/black"
+        android:progress="80"
         android:progressDrawable="@color/colorBlue"
         android:thumb="@drawable/ear"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.326"
+        app:layout_constraintHorizontal_bias="0.24"
         app:layout_constraintHorizontal_weight="1"
         app:layout_constraintStart_toEndOf="@+id/textView3"
         app:layout_constraintTop_toBottomOf="@+id/soundSpinner"
@@ -142,7 +142,7 @@
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/shuffle_check_box"
-        app:layout_constraintVertical_bias="0.725" />
+        app:layout_constraintVertical_bias="0.575" />
 
     <CheckBox
         android:id="@+id/shuffle_check_box"
@@ -159,5 +159,5 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/textView3"
         app:layout_constraintTop_toBottomOf="@+id/textView3"
-        app:layout_constraintVertical_bias="0.494" />
+        app:layout_constraintVertical_bias="0.306" />
 </android.support.constraint.ConstraintLayout>
