@@ -51,6 +51,7 @@ public class SoundControllerActivity extends AppCompatActivity implements Adapte
         initGUIelements();
 
         arrayListSpinnerAdaptor();
+        shuffle_check_box.setVisibility(View.GONE);
        // value = new ConstValues();
         isToShuffle = false;
         preferences = getApplicationContext().getSharedPreferences("silence_app", 0);
