@@ -12,37 +12,50 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 
 public class SoundControllerActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
-    private Spinner sound_selector;
+
     private Button backBtn;
     private Button playBtn;
-    private ArrayAdapter<CharSequence> adapter;
-    private SharedPreferences preferences;
-    private MediaPlayer soundTest;
-    Editor prefEditor;
-    private float count;
+
+    private Spinner sound_selector;
+
     private SeekBar soundSeekBar;
+
+    private ArrayAdapter<CharSequence> adapter;
+
+    private SharedPreferences preferences;
+
+    private MediaPlayer soundTest;
+
+    private Editor prefEditor;
+
+    private float count;
+
+    private CheckBox shuffle_check_box;
+
+    private boolean isToShuffle;
+
+    ConstValues value;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sound_controller);
 
+        initGUIelements();
 
-
-        backBtn = findViewById(R.id.backBtn);
-        playBtn = findViewById(R.id.playBtn);
-        adapter = ArrayAdapter.createFromResource(this, R.array.soundModes, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
+        arrayListSpinnerAdaptor();
+        value = new ConstValues();
+        isToShuffle = false;
         preferences = getApplicationContext().getSharedPreferences("silence_app", 0);
         prefEditor = preferences.edit();
 
-        sound_selector = findViewById(R.id.soundSpinner);
-        sound_selector.setAdapter(adapter);
-        sound_selector.setOnItemSelectedListener(this);
         sound_selector.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -121,7 +134,6 @@ public class SoundControllerActivity extends AppCompatActivity implements Adapte
             }
         });
 
-        soundSeekBar = findViewById(R.id.soundSeekBar);
         count = soundSeekBar.getProgress();
          soundSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -130,29 +142,55 @@ public class SoundControllerActivity extends AppCompatActivity implements Adapte
                 prefEditor.putString("volume", progress+"");
                 prefEditor.commit();
             }
-
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-
+                //DO NOTHING
             }
-
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-
+                //DO NOTHING
             }
         });
+
         playBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 float vol = count / 100f;
-                Log.d("myTag", vol + "");
                 soundTest.setVolume(vol,vol);
                 soundTest.start();
             }
         });
+
+        shuffle_check_box.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                isToShuffle = !isToShuffle;
+            }
+        });
     }
 
+    private void initGUIelements() {
+        backBtn = findViewById(R.id.backBtn);
+        playBtn = findViewById(R.id.playBtn);
+        sound_selector = findViewById(R.id.soundSpinner);
+        shuffle_check_box = findViewById(R.id.shuffle_check_box);
+        soundSeekBar = findViewById(R.id.soundSeekBar);
 
+    }
+
+    private void arrayListSpinnerAdaptor() {
+        adapter = ArrayAdapter.createFromResource(this, R.array.soundModes, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sound_selector.setAdapter(adapter);
+        sound_selector.setOnItemSelectedListener(this);
+    }
+
+    public void shuffleSound(){
+        if(isToShuffle){
+            int ran = (int)(Math.random()*sound_selector.getCount());
+            sound_selector.setSelection(ran);
+        }
+    }
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {

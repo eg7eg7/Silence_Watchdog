@@ -20,89 +20,92 @@ import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.Manifest;
-import android.widget.Toast;
 
 import com.muddzdev.styleabletoastlibrary.StyleableToast;
 
 import java.text.DecimalFormat;
-import com.muddzdev.styleabletoastlibrary.StyleableToast;
 
 public class WatchdogMainActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
-    private MediaPlayer quiet_sound;
-    private Spinner mode_selector;
+
     private Button ToggleStartStopButton;
     private Button soundControlBtn;
     private Button report_false_record_btn;
-    private ArrayAdapter<CharSequence> adapter;
-    private SeekBar threshold_Seeker;
+
+    private MediaPlayer quiet_sound;
+
+    private Spinner mode_selector;
+
+    private TextView Threshold_text;
+    private TextView max_thres_text_id;
+    private TextView textView5;
     private TextView threshold_indicator_text;
     private TextView noise_level = null;
+
+    private ArrayAdapter<CharSequence> adapter;
+
+    private SeekBar threshold_Seeker;
+
+    private EnergyFilter energyfilter;
+
     private Thread thread;
     private boolean isThreadRun = false;
-    private double current_threshold;
+
     private static final int REQUEST_RECORD_AUDIO_PERMISSION = 200;
     private SharedPreferences preferences;
     private boolean permissionToRecordAccepted = false;
     private String[] permissions = {Manifest.permission.RECORD_AUDIO};
     private SharedPreferences.Editor prefEditor;
+
+
+
+
+    private double current_threshold;
     private int bufferSize;
     private float volume = (float) 100;
     private AudioRecord audio = null;
     private double amp;
     private int SAMPLE_DELAY = 300;
     private short[] buffer;
-    private EnergyFilter energyfilter;
     private int buffer_size_read;
-    private TextView Threshold_text;
-    private TextView max_thres_text_id;
-    private TextView textView5;
     private final int DELAY_GAP = 5000;
     private final int INITIAL_THRESHOLD = 50;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_watchdog_main);
-
         ActivityCompat.requestPermissions(this, permissions, REQUEST_RECORD_AUDIO_PERMISSION);
 
-        mode_selector = findViewById(R.id.silence_mode_id);
-        soundControlBtn = findViewById(R.id.soundControllerBtn);
-        ToggleStartStopButton = findViewById(R.id.startBtn);
-        adapter = ArrayAdapter.createFromResource(this, R.array.modes, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        mode_selector.setAdapter(adapter);
-        mode_selector.setOnItemSelectedListener(this);
-        threshold_Seeker = findViewById(R.id.seekbar_id);
-        threshold_indicator_text = findViewById(R.id.threshold_indicator_id);
-        noise_level = findViewById(R.id.noise_level_id);
+        initGUIelements();
+
+        arrayListSpinnerAdaptor();
+
         preferences = getApplicationContext().getSharedPreferences("silence_app", 0);
         prefEditor = preferences.edit();
+
+
         threshold_Seeker.setProgress(INITIAL_THRESHOLD);
         current_threshold = INITIAL_THRESHOLD;
         threshold_indicator_text.setText(threshold_Seeker.getProgress()+"");
         threshold_Seeker.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
-            public void onProgressChanged(SeekBar seekBar, int progress,
-                                          boolean fromUser) {
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 //set textView's text
-
                 current_threshold = progress;
                 threshold_indicator_text.setText("" + progress);
             }
-
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
+                //DO NOTHING
             }
-
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
+                //DO NOTHING
             }
 
         });
-        Threshold_text = findViewById(R.id.Threshold_text);
-        max_thres_text_id = findViewById(R.id.max_thres_text_id);
-        textView5 = findViewById(R.id.textView5);
-        report_false_record_btn = findViewById(R.id.report_false_record_btn);
+
         report_false_record_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -110,33 +113,15 @@ public class WatchdogMainActivity extends AppCompatActivity implements AdapterVi
                 showToast();
             }
         });
+
         mode_selector.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                Log.d("myTag", mode_selector.getSelectedItem() + "");
-
-                if(mode_selector.getSelectedItem().equals("Classroom")){
-                    Log.d("myTag", "Hello");
-                    threshold_Seeker.setVisibility(View.GONE);
-                    Threshold_text.setVisibility(View.GONE);
-                    max_thres_text_id.setVisibility(View.GONE);
-                    textView5.setVisibility(View.GONE);
-                    threshold_indicator_text.setVisibility(View.GONE);
-                    report_false_record_btn.setVisibility(View.GONE);
-                }
-                else{
-                    threshold_Seeker.setVisibility(View.VISIBLE);
-                    Threshold_text.setVisibility(View.VISIBLE);
-                    max_thres_text_id.setVisibility(View.VISIBLE);
-                    textView5.setVisibility(View.VISIBLE);
-                    threshold_indicator_text.setVisibility(View.VISIBLE);
-                    report_false_record_btn.setVisibility(View.GONE);
-                }
+                modeController();
             }
-
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-
+                //Do NOTHING
             }
         });
         soundControlBtn.setOnClickListener(new View.OnClickListener() {
@@ -147,12 +132,12 @@ public class WatchdogMainActivity extends AppCompatActivity implements AdapterVi
             }
         });
         ToggleStartStopButton.setOnClickListener(new View.OnClickListener() {
-            boolean mStartRecording = true;
+            boolean isStartRecording = true;
 
             @Override
             public void onClick(View v) {
-                onRecord(mStartRecording);
-                if (mStartRecording) {
+                onRecord(isStartRecording);
+                if (isStartRecording) {
                     report_false_record_btn.setVisibility(View.VISIBLE);
                     ToggleStartStopButton.setText("Stop");
                     energyfilter = new EnergyFilter();
@@ -162,11 +147,19 @@ public class WatchdogMainActivity extends AppCompatActivity implements AdapterVi
                     report_false_record_btn.setVisibility(View.GONE);
                     ToggleStartStopButton.setText("Start");
                 }
-                mStartRecording = !mStartRecording;
+                isStartRecording = !isStartRecording;
             }
         });
 
     }
+
+    private void arrayListSpinnerAdaptor() {
+        adapter = ArrayAdapter.createFromResource(this, R.array.modes, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mode_selector.setAdapter(adapter);
+        mode_selector.setOnItemSelectedListener(this);
+    }
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -354,5 +347,38 @@ public class WatchdogMainActivity extends AppCompatActivity implements AdapterVi
     }
     public void showToast(){
         StyleableToast.makeText(this, "You Reported on a false record", R.style.toast).show();
+    }
+
+    private void initGUIelements() {
+        mode_selector = findViewById(R.id.silence_mode_id);
+        soundControlBtn = findViewById(R.id.soundControllerBtn);
+        threshold_Seeker = findViewById(R.id.seekbar_id);
+        ToggleStartStopButton = findViewById(R.id.startBtn);
+        noise_level = findViewById(R.id.noise_level_id);
+        threshold_indicator_text = findViewById(R.id.threshold_indicator_id);
+        Threshold_text = findViewById(R.id.Threshold_text);
+        max_thres_text_id = findViewById(R.id.max_thres_text_id);
+        textView5 = findViewById(R.id.textView5);
+        report_false_record_btn = findViewById(R.id.report_false_record_btn);
+        threshold_indicator_text = findViewById(R.id.threshold_indicator_id);
+    }
+
+    private void modeController(){
+        report_false_record_btn.setVisibility(View.GONE);
+        if(mode_selector.getSelectedItem().equals("Classroom")){
+            threshold_Seeker.setVisibility(View.GONE);
+            Threshold_text.setVisibility(View.GONE);
+            max_thres_text_id.setVisibility(View.GONE);
+            textView5.setVisibility(View.GONE);
+            threshold_indicator_text.setVisibility(View.GONE);
+
+        }
+        else{
+            threshold_Seeker.setVisibility(View.VISIBLE);
+            Threshold_text.setVisibility(View.VISIBLE);
+            max_thres_text_id.setVisibility(View.VISIBLE);
+            textView5.setVisibility(View.VISIBLE);
+            threshold_indicator_text.setVisibility(View.VISIBLE);
+        }
     }
 }
