@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Silence Watchdog</string>
+    <string name="app_name">Hushhh</string>
 
     <string-array name="soundModes">
         <item>shhh</item>
@@ -22,7 +22,7 @@
     </string-array>
 
     <string-array name="lecturer">
-        <item>10_secound_sample</item>
+        <item>10_second_sample</item>
     </string-array>
 
     <string name="title_activity_watchdog_main">WatchdogMainActivity</string>
