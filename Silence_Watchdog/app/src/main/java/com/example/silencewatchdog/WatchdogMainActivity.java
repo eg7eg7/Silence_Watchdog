@@ -23,6 +23,8 @@ import android.Manifest;
 
 //import com.muddzdev.styleabletoastlibrary.StyleableToast;
 
+import com.muddzdev.styleabletoastlibrary.StyleableToast;
+
 import java.text.DecimalFormat;
 
 public class WatchdogMainActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
@@ -35,6 +37,9 @@ public class WatchdogMainActivity extends AppCompatActivity implements AdapterVi
 
     private Spinner mode_selector;
 
+    private Spinner lecturer_selector;
+
+    private TextView lecturerText;
     private TextView Threshold_text;
     private TextView max_thres_text_id;
     private TextView textView5;
@@ -42,6 +47,7 @@ public class WatchdogMainActivity extends AppCompatActivity implements AdapterVi
     private TextView noise_level = null;
 
     private ArrayAdapter<CharSequence> adapter;
+    private ArrayAdapter<CharSequence> adapter2;
 
     private SeekBar threshold_Seeker;
 
@@ -137,13 +143,15 @@ public class WatchdogMainActivity extends AppCompatActivity implements AdapterVi
             public void onClick(View v) {
                 onRecord(isStartRecording);
                 if (isStartRecording) {
-                    report_false_record_btn.setVisibility(View.VISIBLE);
+                    if(mode_selector.getSelectedItem().equals("Classroom"))
+                        report_false_record_btn.setVisibility(View.VISIBLE);
                     ToggleStartStopButton.setText("Stop");
                     energyfilter = new EnergyFilter();
                     startListenAudio();
 
                 } else {
-                    report_false_record_btn.setVisibility(View.GONE);
+                    if(mode_selector.getSelectedItem().equals("Classroom"))
+                        report_false_record_btn.setVisibility(View.GONE);
                     ToggleStartStopButton.setText("Start");
                 }
                 isStartRecording = !isStartRecording;
@@ -157,6 +165,11 @@ public class WatchdogMainActivity extends AppCompatActivity implements AdapterVi
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mode_selector.setAdapter(adapter);
         mode_selector.setOnItemSelectedListener(this);
+
+        adapter2 = ArrayAdapter.createFromResource(this, R.array.lecturer, android.R.layout.simple_spinner_item);
+        adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        lecturer_selector.setAdapter(adapter2);
+        lecturer_selector.setOnItemSelectedListener(this);
     }
 
 
@@ -358,10 +371,12 @@ public class WatchdogMainActivity extends AppCompatActivity implements AdapterVi
     }
     public void showToast(){
         //TODO remove comment and make it work
-        //StyleableToast.makeText(this, "You Reported on a false record", R.style.toast).show();
+        StyleableToast.makeText(this, "You Reported on a false record", R.style.toast).show();
     }
 
     private void initGUIelements() {
+        lecturer_selector = findViewById(R.id.lecturer_spinner);
+        lecturerText=findViewById(R.id.lecturerText);
         mode_selector = findViewById(R.id.silence_mode_id);
         soundControlBtn = findViewById(R.id.soundControllerBtn);
         threshold_Seeker = findViewById(R.id.seekbar_id);
@@ -378,6 +393,8 @@ public class WatchdogMainActivity extends AppCompatActivity implements AdapterVi
     private void modeController(){
         report_false_record_btn.setVisibility(View.GONE);
         if(mode_selector.getSelectedItem().equals("Classroom")){
+            lecturerText.setVisibility(View.VISIBLE);
+            lecturer_selector.setVisibility(View.VISIBLE);
             threshold_Seeker.setVisibility(View.GONE);
             Threshold_text.setVisibility(View.GONE);
             max_thres_text_id.setVisibility(View.GONE);
@@ -386,6 +403,8 @@ public class WatchdogMainActivity extends AppCompatActivity implements AdapterVi
 
         }
         else{
+            lecturerText.setVisibility(View.GONE);
+            lecturer_selector.setVisibility(View.GONE);
             threshold_Seeker.setVisibility(View.VISIBLE);
             Threshold_text.setVisibility(View.VISIBLE);
             max_thres_text_id.setVisibility(View.VISIBLE);

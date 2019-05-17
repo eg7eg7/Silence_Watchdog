@@ -29,8 +29,8 @@
 
     <TextView
         android:id="@+id/modeText"
-        android:layout_width="90dp"
-        android:layout_height="35dp"
+        android:layout_width="68dp"
+        android:layout_height="24dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
@@ -47,23 +47,23 @@
 
     <Spinner
         android:id="@+id/silence_mode_id"
-        android:layout_width="129dp"
-        android:layout_height="33dp"
+        android:layout_width="186dp"
+        android:layout_height="24dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="120dp"
+        android:layout_marginEnd="32dp"
         android:layout_marginBottom="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.23"
+        app:layout_constraintHorizontal_bias="0.984"
         app:layout_constraintStart_toEndOf="@+id/modeText"
         app:layout_constraintTop_toBottomOf="@+id/Title"
-        app:layout_constraintVertical_bias="0.052"></Spinner>
+        app:layout_constraintVertical_bias="0.049"></Spinner>
 
     <TextView
-        android:id="@+id/textView4"
-        android:layout_width="94dp"
-        android:layout_height="34dp"
+        android:id="@+id/lecturerText"
+        android:layout_width="98dp"
+        android:layout_height="26dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
@@ -73,25 +73,25 @@
         android:typeface="serif"
         app:layout_constraintBottom_toTopOf="@+id/startBtn"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.142"
+        app:layout_constraintHorizontal_bias="0.154"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/modeText"
-        app:layout_constraintVertical_bias="0.157" />
+        app:layout_constraintVertical_bias="0.128" />
 
     <Spinner
         android:id="@+id/lecturer_spinner"
-        android:layout_width="125dp"
-        android:layout_height="35dp"
+        android:layout_width="187dp"
+        android:layout_height="24dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
+        android:layout_marginEnd="32dp"
         android:layout_marginBottom="8dp"
         app:layout_constraintBottom_toTopOf="@+id/startBtn"
         app:layout_constraintEnd_toEndOf="@+id/barrier"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/textView4"
         app:layout_constraintTop_toBottomOf="@+id/silence_mode_id"
-        app:layout_constraintVertical_bias="0.141" />
+        app:layout_constraintVertical_bias="0.145" />
 
     <SeekBar
         android:id="@+id/seekbar_id"
@@ -111,7 +111,6 @@
         android:verticalScrollbarPosition="defaultPosition"
         app:layout_constraintBottom_toBottomOf="@+id/startBtn"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView"
         app:layout_constraintVertical_bias="0.933" />
 
     <Button
@@ -136,21 +135,20 @@
 
     <Button
         android:id="@+id/report_false_record_btn"
-        android:layout_width="126dp"
-        android:layout_height="55dp"
+        android:layout_width="201dp"
+        android:layout_height="29dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
+        android:layout_marginEnd="168dp"
         android:layout_marginBottom="8dp"
         android:background="@drawable/mode_button"
         android:text="Report False Record"
         android:textSize="15dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/soundControllerBtn"
         app:layout_constraintEnd_toEndOf="@+id/barrier"
-        app:layout_constraintHorizontal_bias="0.529"
-        app:layout_constraintStart_toEndOf="@+id/startBtn"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.562" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/startBtn"
+        app:layout_constraintVertical_bias="0.918" />
 
     <Button
         android:id="@+id/soundControllerBtn"
