@@ -15,12 +15,16 @@ public class EnergyFilter {
     private final double CONFIDENCE_TRUE_POSITIVE_WEIGHT = 0.1;
     private final double CONFIDENCE_FALSE_POSITIVE_WEIGHT = 0.4;
 
+    private short maxPower;
+
     public EnergyFilter() {
         this.currentBuffer = new double[BUFFER_SIZE];
         this.index = 0;
         this.currentBufferAvg = 0;
         this.prevBufferAvg = 0;
         this.confidence = 1;
+        this.maxPower = 1;
+
 
     }
 
@@ -32,15 +36,36 @@ public class EnergyFilter {
 
     public boolean nextSample(short[] powers) {
         /*
-         * read next power add those powers to buffer and throw last added calculate
-         * Delta (Delta = currentAvg - pervAvg) if Delta is Bigger than the variance
-         * trigger
+         * update maxPower Per Session and normalize it
+         * calculate variance and enter to buffer
          */
+       // updateMaxPower(powers);
+       // double[] normalizedPowers = normalizePowersBaseMaxPower(powers);
+
         double avgSumSquarePowers = this.getAvg(powers);
         this.enterNewAvgToBuffer(avgSumSquarePowers);
 
         return isToShhh();
 
+    }
+
+    private void updateMaxPower(short[] powers){
+        for(int i = 0; i < powers.length; i++){
+            if(powers[i] > maxPower){
+                maxPower = powers[i];
+                Log.d("maxpower","max power = " + maxPower);
+            }
+        }
+    }
+
+    private double[] normalizePowersBaseMaxPower(short[] powers){
+        double[] normalizedPowers = new double[powers.length];
+        for(int i = 0 ; i < powers.length; i++){
+            double convertToDouble =  powers[i];
+            normalizedPowers[i] = convertToDouble / maxPower;
+        }
+
+        return normalizedPowers;
     }
 
     private double avgSumOfSquareOfPowers(double powers[]) {
@@ -71,7 +96,7 @@ public class EnergyFilter {
         Log.d("EnergyFilterDelta", "Delta = " + (currentBufferAvg - prevBufferAvg));
     }
 
-    private double getAvg(short arr[]) {
+    private double getAvg(short[] arr) {
         double sum = 0;
         for (int i = 0; i < arr.length; i++) {
             sum += arr[i];

@@ -40,7 +40,7 @@ public class SoundControllerActivity extends AppCompatActivity implements Adapte
 
     private boolean isToShuffle;
 
-    ConstValues value;
+ //   ConstValues value;
 
 
     @Override
@@ -51,7 +51,7 @@ public class SoundControllerActivity extends AppCompatActivity implements Adapte
         initGUIelements();
 
         arrayListSpinnerAdaptor();
-        value = new ConstValues();
+       // value = new ConstValues();
         isToShuffle = false;
         preferences = getApplicationContext().getSharedPreferences("silence_app", 0);
         prefEditor = preferences.edit();

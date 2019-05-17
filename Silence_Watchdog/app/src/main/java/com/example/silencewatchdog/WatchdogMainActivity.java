@@ -21,7 +21,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.Manifest;
 
-import com.muddzdev.styleabletoastlibrary.StyleableToast;
+//import com.muddzdev.styleabletoastlibrary.StyleableToast;
 
 import java.text.DecimalFormat;
 
@@ -70,6 +70,8 @@ public class WatchdogMainActivity extends AppCompatActivity implements AdapterVi
     private final int DELAY_GAP = 5000;
     private final int INITIAL_THRESHOLD = 50;
 
+    private short session_max;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,7 +86,7 @@ public class WatchdogMainActivity extends AppCompatActivity implements AdapterVi
         preferences = getApplicationContext().getSharedPreferences("silence_app", 0);
         prefEditor = preferences.edit();
 
-
+        buffer_size_read = 1;
         threshold_Seeker.setProgress(INITIAL_THRESHOLD);
         current_threshold = INITIAL_THRESHOLD;
         threshold_indicator_text.setText(threshold_Seeker.getProgress()+"");
@@ -188,8 +190,8 @@ public class WatchdogMainActivity extends AppCompatActivity implements AdapterVi
         audio.stop();
 
     }
-    private void startRecording() {
-        isThreadRun = true;
+
+    public void updateMediaPlayer() {
         String vol_string = preferences.getString("volume", "100");
         volume = Float.parseFloat(vol_string);
 
@@ -228,9 +230,17 @@ public class WatchdogMainActivity extends AppCompatActivity implements AdapterVi
             case "stopthat_women":
                 quiet_sound = MediaPlayer.create(getApplicationContext(), R.raw.stopthat_women);
                 break;
+            default:
+                quiet_sound = MediaPlayer.create(getApplicationContext(), R.raw.shhh);
+
         }
         float volume_d = volume / 100f;
         quiet_sound.setVolume(volume_d, volume_d);
+    }
+    private void startRecording() {
+        isThreadRun = true;
+
+
         int sampleRate = 44100;
         try {
             bufferSize = AudioRecord.getMinBufferSize(sampleRate, AudioFormat.CHANNEL_IN_MONO,
@@ -276,6 +286,7 @@ public class WatchdogMainActivity extends AppCompatActivity implements AdapterVi
     private void RequestSilence() {
         if (!isThreadRun)
             return;
+        updateMediaPlayer();
         String mode = mode_selector.getSelectedItem() + "";
         updateAmplitude(buffer_size_read);
 
@@ -321,7 +332,10 @@ public class WatchdogMainActivity extends AppCompatActivity implements AdapterVi
     }
 
     public void updateAmplitude(int bufferReadNum) {
-
+        if(bufferReadNum == 0){
+            Log.d("updateAmplitude", "bufferReadNum = 0 return");
+            return;
+        }
         double sumLevel = 0;
         for (int i = 0; i < bufferReadNum; i++) {
             sumLevel += buffer[i];
@@ -346,7 +360,8 @@ public class WatchdogMainActivity extends AppCompatActivity implements AdapterVi
 
     }
     public void showToast(){
-        StyleableToast.makeText(this, "You Reported on a false record", R.style.toast).show();
+        //TODO remove comment and make it work
+        //StyleableToast.makeText(this, "You Reported on a false record", R.style.toast).show();
     }
 
     private void initGUIelements() {
