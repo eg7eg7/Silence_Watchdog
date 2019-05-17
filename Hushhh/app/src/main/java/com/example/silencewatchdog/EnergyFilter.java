@@ -3,8 +3,8 @@ package com.example.silencewatchdog;
 import android.util.Log;
 
 public class EnergyFilter {
-    private final double LECTURER_VARIANCE_WEIGHT = 0.4;
-    private double lecturerVariance;
+   // private final double LECTURER_VARIANCE_WEIGHT = 0.4;
+    private double lecturerVariance = 6;
     private final int BUFFER_SIZE = 20;
     private double currentBuffer[];
     private double prevBufferAvg;
@@ -64,7 +64,7 @@ public class EnergyFilter {
 
 
         this.currentBufferAvg = this.avgSumOfSquareOfPowers(this.currentBuffer);
-        this.lecturerVariance = currentBufferAvg * LECTURER_VARIANCE_WEIGHT;
+        //this.lecturerVariance = currentBufferAvg * LECTURER_VARIANCE_WEIGHT;
 
 
         //if the sample will cause shh or there is silence dont take it into the Buffer
