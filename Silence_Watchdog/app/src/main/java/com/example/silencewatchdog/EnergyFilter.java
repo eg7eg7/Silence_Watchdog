@@ -3,7 +3,8 @@ package com.example.silencewatchdog;
 import android.util.Log;
 
 public class EnergyFilter {
-    private final int LECTURER_VARIANCE = 6;
+    private final double LECTURER_VARIANCE_WEIGHT = 0.4;
+    private double lecturerVariance;
     private final int BUFFER_SIZE = 20;
     private double currentBuffer[];
     private double prevBufferAvg;
@@ -15,7 +16,6 @@ public class EnergyFilter {
     private final double CONFIDENCE_TRUE_POSITIVE_WEIGHT = 0.1;
     private final double CONFIDENCE_FALSE_POSITIVE_WEIGHT = 0.4;
 
-    private short maxPower;
 
     public EnergyFilter() {
         this.currentBuffer = new double[BUFFER_SIZE];
@@ -23,7 +23,7 @@ public class EnergyFilter {
         this.currentBufferAvg = 0;
         this.prevBufferAvg = 0;
         this.confidence = 1;
-        this.maxPower = 1;
+        this.lecturerVariance = currentBufferAvg;
 
 
     }
@@ -49,25 +49,6 @@ public class EnergyFilter {
 
     }
 
-    private void updateMaxPower(short[] powers){
-        for(int i = 0; i < powers.length; i++){
-            if(powers[i] > maxPower){
-                maxPower = powers[i];
-                Log.d("maxpower","max power = " + maxPower);
-            }
-        }
-    }
-
-    private double[] normalizePowersBaseMaxPower(short[] powers){
-        double[] normalizedPowers = new double[powers.length];
-        for(int i = 0 ; i < powers.length; i++){
-            double convertToDouble =  powers[i];
-            normalizedPowers[i] = convertToDouble / maxPower;
-        }
-
-        return normalizedPowers;
-    }
-
     private double avgSumOfSquareOfPowers(double powers[]) {
         double sum = 0;
         for (int i = 0; i < powers.length; i++) {
@@ -83,9 +64,11 @@ public class EnergyFilter {
 
 
         this.currentBufferAvg = this.avgSumOfSquareOfPowers(this.currentBuffer);
+        this.lecturerVariance = currentBufferAvg * LECTURER_VARIANCE_WEIGHT;
+
 
         //if the sample will cause shh or there is silence dont take it into the Buffer
-        if(getSampleDelta() > LECTURER_VARIANCE || getSampleDelta() < -LECTURER_VARIANCE){
+        if(getSampleDelta() > lecturerVariance || getSampleDelta() < -lecturerVariance){
             this.currentBuffer[this.index % BUFFER_SIZE] = oldVal;
         }
 
@@ -109,7 +92,7 @@ public class EnergyFilter {
         // Need to sample more information before giving shhh
         if (this.index <= BUFFER_SIZE) {
             return false;
-        } else if (getSampleDelta() < LECTURER_VARIANCE) {
+        } else if (getSampleDelta() < lecturerVariance) {
             return false;
         }
 

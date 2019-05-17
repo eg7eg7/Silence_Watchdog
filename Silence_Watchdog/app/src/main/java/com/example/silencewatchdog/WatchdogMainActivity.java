@@ -56,9 +56,6 @@ public class WatchdogMainActivity extends AppCompatActivity implements AdapterVi
     private String[] permissions = {Manifest.permission.RECORD_AUDIO};
     private SharedPreferences.Editor prefEditor;
 
-
-
-
     private double current_threshold;
     private int bufferSize;
     private float volume = (float) 100;
