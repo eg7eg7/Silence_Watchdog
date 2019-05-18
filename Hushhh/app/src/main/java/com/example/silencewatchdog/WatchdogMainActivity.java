@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.media.AudioFormat;
+import android.media.AudioManager;
 import android.media.AudioRecord;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
@@ -21,13 +22,11 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.Manifest;
 
-//import com.muddzdev.styleabletoastlibrary.StyleableToast;
-
 import com.muddzdev.styleabletoastlibrary.StyleableToast;
 
 import java.text.DecimalFormat;
 
-public class WatchdogMainActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
+public class WatchdogMainActivity extends AppCompatActivity {
 
     private Button ToggleStartStopButton;
     private Button soundControlBtn;
@@ -41,10 +40,11 @@ public class WatchdogMainActivity extends AppCompatActivity implements AdapterVi
 
     private TextView lecturerText;
     private TextView Threshold_text;
-    private TextView max_thres_text_id;
+    private TextView max_threshold_text_id;
     private TextView textView5;
     private TextView threshold_indicator_text;
     private TextView noise_level = null;
+    private TextView noise_level_text_view = null;
 
     private ArrayAdapter<CharSequence> adapter;
     private ArrayAdapter<CharSequence> adapter2;
@@ -56,6 +56,7 @@ public class WatchdogMainActivity extends AppCompatActivity implements AdapterVi
     private Thread thread;
     private boolean isThreadRun = false;
 
+    private final int sampleRate = 44100;
     private static final int REQUEST_RECORD_AUDIO_PERMISSION = 200;
     private SharedPreferences preferences;
     private boolean permissionToRecordAccepted = false;
@@ -66,15 +67,18 @@ public class WatchdogMainActivity extends AppCompatActivity implements AdapterVi
     private int bufferSize;
     private float volume = (float) 100;
     private AudioRecord audio = null;
+    //last amplitude in dB
     private double amp;
-    private int SAMPLE_DELAY = 300;
+    //delay between two samples in the mic
+    private final int SAMPLE_DELAY = 300;
     private short[] buffer;
     private int buffer_size_read;
+    //delay between two silencers
     private final int DELAY_GAP = 5000;
     private final int INITIAL_THRESHOLD = 50;
-
-    private short session_max;
-
+    private boolean lastSilenced = false;
+    boolean isStartRecording = false;
+    private String current_mode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,11 +92,12 @@ public class WatchdogMainActivity extends AppCompatActivity implements AdapterVi
 
         preferences = getApplicationContext().getSharedPreferences("silence_app", 0);
         prefEditor = preferences.edit();
-
+        quiet_sound = new MediaPlayer();
+        quiet_sound.setAudioStreamType(AudioManager.STREAM_MUSIC);
         buffer_size_read = 1;
         threshold_Seeker.setProgress(INITIAL_THRESHOLD);
         current_threshold = INITIAL_THRESHOLD;
-        threshold_indicator_text.setText(threshold_Seeker.getProgress()+"");
+        threshold_indicator_text.setText(threshold_Seeker.getProgress() + "");
         threshold_Seeker.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -100,10 +105,12 @@ public class WatchdogMainActivity extends AppCompatActivity implements AdapterVi
                 current_threshold = progress;
                 threshold_indicator_text.setText("" + progress);
             }
+
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
                 //DO NOTHING
             }
+
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
                 //DO NOTHING
@@ -122,8 +129,11 @@ public class WatchdogMainActivity extends AppCompatActivity implements AdapterVi
         mode_selector.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (isStartRecording)
+                    toggleButtonFunction();
                 modeController();
             }
+
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
                 //Do NOTHING
@@ -137,39 +147,42 @@ public class WatchdogMainActivity extends AppCompatActivity implements AdapterVi
             }
         });
         ToggleStartStopButton.setOnClickListener(new View.OnClickListener() {
-            boolean isStartRecording = true;
+
 
             @Override
             public void onClick(View v) {
-                onRecord(isStartRecording);
-                if (isStartRecording) {
-                    if(mode_selector.getSelectedItem().equals("Classroom"))
-                        report_false_record_btn.setVisibility(View.VISIBLE);
-                    ToggleStartStopButton.setText("Stop");
-                    energyfilter = new EnergyFilter();
-                    startListenAudio();
+                toggleButtonFunction();
 
-                } else {
-                    if(mode_selector.getSelectedItem().equals("Classroom"))
-                        report_false_record_btn.setVisibility(View.GONE);
-                    ToggleStartStopButton.setText("Start");
-                }
-                isStartRecording = !isStartRecording;
             }
         });
 
+    }
+
+    public void toggleButtonFunction() {
+        isStartRecording = !isStartRecording;
+        onRecord(isStartRecording);
+        if (isStartRecording) {
+            if (mode_selector.getSelectedItem().equals("Classroom"))
+                report_false_record_btn.setVisibility(View.VISIBLE);
+            ToggleStartStopButton.setText("Stop");
+            energyfilter = new EnergyFilter();
+            startListenAudio();
+
+        } else {
+            if (mode_selector.getSelectedItem().equals("Classroom"))
+                report_false_record_btn.setVisibility(View.GONE);
+            ToggleStartStopButton.setText("Start");
+        }
     }
 
     private void arrayListSpinnerAdaptor() {
         adapter = ArrayAdapter.createFromResource(this, R.array.modes, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mode_selector.setAdapter(adapter);
-        mode_selector.setOnItemSelectedListener(this);
 
         adapter2 = ArrayAdapter.createFromResource(this, R.array.lecturer, android.R.layout.simple_spinner_item);
         adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         lecturer_selector.setAdapter(adapter2);
-        lecturer_selector.setOnItemSelectedListener(this);
     }
 
 
@@ -204,9 +217,8 @@ public class WatchdogMainActivity extends AppCompatActivity implements AdapterVi
     public void updateMediaPlayer() {
         String vol_string = preferences.getString("volume", "100");
         volume = Float.parseFloat(vol_string);
-
         String sound_name = preferences.getString("current_sound", "shhh");
-        switch (sound_name){
+        switch (sound_name) {
             case "shhh":
                 quiet_sound = MediaPlayer.create(getApplicationContext(), R.raw.shhh);
                 break;
@@ -247,11 +259,11 @@ public class WatchdogMainActivity extends AppCompatActivity implements AdapterVi
         float volume_d = volume / 100f;
         quiet_sound.setVolume(volume_d, volume_d);
     }
+
     private void startRecording() {
         isThreadRun = true;
 
 
-        int sampleRate = 44100;
         try {
             bufferSize = AudioRecord.getMinBufferSize(sampleRate, AudioFormat.CHANNEL_IN_MONO,
                     AudioFormat.ENCODING_PCM_16BIT);
@@ -272,7 +284,11 @@ public class WatchdogMainActivity extends AppCompatActivity implements AdapterVi
                 while (thread != null && !thread.isInterrupted()) {
                     //Let's make the thread sleep for a the approximate sampling time
                     try {
-                        Thread.sleep(SAMPLE_DELAY);
+                        if (lastSilenced) {
+                            Thread.sleep(DELAY_GAP);
+                            lastSilenced = false;
+                        } else
+                            Thread.sleep(SAMPLE_DELAY);
                     } catch (InterruptedException ie) {
                         ie.printStackTrace();
                     }
@@ -282,7 +298,10 @@ public class WatchdogMainActivity extends AppCompatActivity implements AdapterVi
 
                         @Override
                         public void run() {
-                            noise_level.setText(new DecimalFormat("##.##").format(amp));
+                            if (current_mode.equals("Custom"))
+                                noise_level.setText(new DecimalFormat("##.##").format(amp));
+                            else if (current_mode.equals("Classroom"))
+                                noise_level.setText(new DecimalFormat("##.##").format(energyfilter.getLastDelta()));
                         }
                     });
 
@@ -297,12 +316,11 @@ public class WatchdogMainActivity extends AppCompatActivity implements AdapterVi
         if (!isThreadRun)
             return;
         updateMediaPlayer();
-        String mode = mode_selector.getSelectedItem() + "";
+        current_mode = mode_selector.getSelectedItem() + "";
         updateAmplitude(buffer_size_read);
 
-        switch (mode) {
+        switch (current_mode) {
             case "Custom":
-                //updateAmplitude(buffer_size_read);
                 if (current_threshold < amp) {
                     playSound();
                 }
@@ -316,17 +334,12 @@ public class WatchdogMainActivity extends AppCompatActivity implements AdapterVi
         }
 
     }
-    public void playSound()
-    {
-        int k;
-        quiet_sound.start();
 
-        try {
-            thread.sleep(DELAY_GAP);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+    public void playSound() {
+        lastSilenced = true;
+        quiet_sound.start();
     }
+
     private void readAudioBuffer() {
 
         try {
@@ -342,7 +355,7 @@ public class WatchdogMainActivity extends AppCompatActivity implements AdapterVi
     }
 
     public void updateAmplitude(int bufferReadNum) {
-        if(bufferReadNum == 0){
+        if (bufferReadNum == 0) {
             Log.d("updateAmplitude", "bufferReadNum = 0 return");
             return;
         }
@@ -359,24 +372,13 @@ public class WatchdogMainActivity extends AppCompatActivity implements AdapterVi
     }
 
 
-
-    @Override
-    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
-    }
-
-    @Override
-    public void onNothingSelected(AdapterView<?> parent) {
-
-    }
-    public void showToast(){
-        //TODO remove comment and make it work
+    public void showToast() {
         StyleableToast.makeText(this, "You Reported on a false record", R.style.toast).show();
     }
 
     private void initGUIelements() {
         lecturer_selector = findViewById(R.id.lecturer_spinner);
-        lecturerText=findViewById(R.id.lecturerText);
+        lecturerText = findViewById(R.id.lecturerText);
         mode_selector = findViewById(R.id.silence_mode_id);
         soundControlBtn = findViewById(R.id.soundControllerBtn);
         threshold_Seeker = findViewById(R.id.seekbar_id);
@@ -384,32 +386,35 @@ public class WatchdogMainActivity extends AppCompatActivity implements AdapterVi
         noise_level = findViewById(R.id.noise_level_id);
         threshold_indicator_text = findViewById(R.id.threshold_indicator_id);
         Threshold_text = findViewById(R.id.Threshold_text);
-        max_thres_text_id = findViewById(R.id.max_thres_text_id);
+        max_threshold_text_id = findViewById(R.id.max_thres_text_id);
         textView5 = findViewById(R.id.textView5);
         report_false_record_btn = findViewById(R.id.report_false_record_btn);
         threshold_indicator_text = findViewById(R.id.threshold_indicator_id);
+        noise_level_text_view = findViewById(R.id.noise_level_text_view);
     }
 
-    private void modeController(){
+    private void modeController() {
         report_false_record_btn.setVisibility(View.GONE);
-        if(mode_selector.getSelectedItem().equals("Classroom")){
+        if (mode_selector.getSelectedItem().equals("Classroom")) {
             lecturerText.setVisibility(View.VISIBLE);
             lecturer_selector.setVisibility(View.VISIBLE);
             threshold_Seeker.setVisibility(View.GONE);
             Threshold_text.setVisibility(View.GONE);
-            max_thres_text_id.setVisibility(View.GONE);
+            max_threshold_text_id.setVisibility(View.GONE);
             textView5.setVisibility(View.GONE);
             threshold_indicator_text.setVisibility(View.GONE);
+            noise_level_text_view.setText(R.string.Classroom_DEBUG_TEXT);
 
-        }
-        else{
+
+        } else {
             lecturerText.setVisibility(View.GONE);
             lecturer_selector.setVisibility(View.GONE);
             threshold_Seeker.setVisibility(View.VISIBLE);
             Threshold_text.setVisibility(View.VISIBLE);
-            max_thres_text_id.setVisibility(View.VISIBLE);
+            max_threshold_text_id.setVisibility(View.VISIBLE);
             textView5.setVisibility(View.VISIBLE);
             threshold_indicator_text.setVisibility(View.VISIBLE);
+            noise_level_text_view.setText(R.string.Custom_DEBUG_TEXT);
         }
     }
 }

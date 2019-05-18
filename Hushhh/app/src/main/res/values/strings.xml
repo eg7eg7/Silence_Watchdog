@@ -30,5 +30,10 @@
     <string name="dummy_content">DUMMY\nCONTENT</string>
     <string name="MAX_THRESHOLD">100</string>
     <string name="MIN_THRESHOLD">0</string>
+    <string name="Classroom_DEBUG_TEXT">DEBUG delta: </string>
+    <string name="Custom_DEBUG_TEXT">DEBUG noise(dB): </string>
+    <string name="Classroom">"Classroom"</string>
+    <string name="Custom">"Custom"</string>
+
 
 </resources>

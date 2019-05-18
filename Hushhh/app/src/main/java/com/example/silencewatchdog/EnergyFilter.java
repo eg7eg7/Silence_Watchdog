@@ -10,6 +10,7 @@ public class EnergyFilter {
     private double prevBufferAvg;
     private double currentBufferAvg;
     private int index;
+    private double delta;
     // TODO add user false positive of confidant of shhh to remove confident
     private double confidence;
 
@@ -23,7 +24,7 @@ public class EnergyFilter {
         this.currentBufferAvg = 0;
         this.prevBufferAvg = 0;
         this.confidence = 1;
-        this.lecturerVariance = currentBufferAvg;
+       // this.lecturerVariance = currentBufferAvg;
 
 
     }
@@ -76,7 +77,8 @@ public class EnergyFilter {
 
 
         Log.d("EnergyFilter","previous average: " + prevBufferAvg + ", current average: " + currentBufferAvg);
-        Log.d("EnergyFilterDelta", "Delta = " + (currentBufferAvg - prevBufferAvg));
+        delta = (currentBufferAvg - prevBufferAvg);
+        Log.d("EnergyFilterDelta", "Delta = " + delta);
     }
 
     private double getAvg(short[] arr) {
@@ -110,6 +112,9 @@ public class EnergyFilter {
 
     private double getSampleDelta() {
         return this.currentBufferAvg - this.prevBufferAvg;
+    }
+    public double getLastDelta() {
+        return delta;
     }
 
 }
