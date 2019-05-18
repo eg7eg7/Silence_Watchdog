@@ -41,7 +41,7 @@ public class WatchdogMainActivity extends AppCompatActivity {
     private TextView lecturerText;
     private TextView Threshold_text;
     private TextView max_threshold_text_id;
-    private TextView textView5;
+    private TextView min_threshold_text;
     private TextView threshold_indicator_text;
     private TextView noise_level = null;
     private TextView noise_level_text_view = null;
@@ -392,7 +392,7 @@ public class WatchdogMainActivity extends AppCompatActivity {
         threshold_indicator_text = findViewById(R.id.threshold_indicator_id);
         Threshold_text = findViewById(R.id.Threshold_text);
         max_threshold_text_id = findViewById(R.id.max_thres_text_id);
-        textView5 = findViewById(R.id.textView5);
+        min_threshold_text = findViewById(R.id.min_threshold_text);
         report_false_record_btn = findViewById(R.id.report_false_record_btn);
         threshold_indicator_text = findViewById(R.id.threshold_indicator_id);
         noise_level_text_view = findViewById(R.id.noise_level_text_view);
@@ -412,7 +412,7 @@ public class WatchdogMainActivity extends AppCompatActivity {
                     threshold_Seeker.setVisibility(View.GONE);
                     Threshold_text.setVisibility(View.GONE);
                     max_threshold_text_id.setVisibility(View.GONE);
-                    textView5.setVisibility(View.GONE);
+                    min_threshold_text.setVisibility(View.GONE);
                     threshold_indicator_text.setVisibility(View.GONE);
                     noise_level_text_view.setText(R.string.Classroom_DEBUG_TEXT);
 
@@ -423,7 +423,7 @@ public class WatchdogMainActivity extends AppCompatActivity {
                     threshold_Seeker.setVisibility(View.VISIBLE);
                     Threshold_text.setVisibility(View.VISIBLE);
                     max_threshold_text_id.setVisibility(View.VISIBLE);
-                    textView5.setVisibility(View.VISIBLE);
+                    min_threshold_text.setVisibility(View.VISIBLE);
                     threshold_indicator_text.setVisibility(View.VISIBLE);
                     noise_level_text_view.setText(R.string.Custom_DEBUG_TEXT);
                 }
