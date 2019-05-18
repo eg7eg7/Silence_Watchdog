@@ -36,4 +36,8 @@
     <string name="Custom">"Custom"</string>
 
 
+    <string name="PREF_SOUNDNAME_KEY">current_sound</string>
+    <string name="PREF_VOLUME_KEY">volume</string>
+
+
 </resources>

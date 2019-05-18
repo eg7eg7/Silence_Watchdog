@@ -166,7 +166,7 @@ public class WatchdogMainActivity extends AppCompatActivity {
                 report_false_record_btn.setVisibility(View.VISIBLE);
             ToggleStartStopButton.setText("Stop");
             energyfilter = new EnergyFilter();
-            startListenAudio();
+
 
         } else {
             if (mode_selector.getSelectedItem().equals("Classroom"))
@@ -201,23 +201,28 @@ public class WatchdogMainActivity extends AppCompatActivity {
 
     private void onRecord(boolean start) {
         if (start) {
-            startRecording();
+            listenToMicrophoneStart();
+            startListenAudio();
         } else {
-            stopRecording();
+            listenToMicrophoneStop();
         }
     }
 
-    private void stopRecording() {
+    private void listenToMicrophoneStop() {
         isThreadRun = false;
         thread.interrupt();
+        thread = null;
         audio.stop();
 
     }
 
     public void updateMediaPlayer() {
-        String vol_string = preferences.getString("volume", "100");
+        final String sound_key = this.getApplicationContext().getString(R.string.PREF_SOUNDNAME_KEY);
+        final String volume_key = this.getApplicationContext().getString(R.string.PREF_VOLUME_KEY);
+
+        String vol_string = preferences.getString(volume_key, "100");
         volume = Float.parseFloat(vol_string);
-        String sound_name = preferences.getString("current_sound", "shhh");
+        String sound_name = preferences.getString(sound_key, "shhh");
         switch (sound_name) {
             case "shhh":
                 quiet_sound = MediaPlayer.create(getApplicationContext(), R.raw.shhh);
@@ -260,7 +265,7 @@ public class WatchdogMainActivity extends AppCompatActivity {
         quiet_sound.setVolume(volume_d, volume_d);
     }
 
-    private void startRecording() {
+    private void listenToMicrophoneStart() {
         isThreadRun = true;
 
 
@@ -394,27 +399,36 @@ public class WatchdogMainActivity extends AppCompatActivity {
     }
 
     private void modeController() {
-        report_false_record_btn.setVisibility(View.GONE);
-        if (mode_selector.getSelectedItem().equals("Classroom")) {
-            lecturerText.setVisibility(View.VISIBLE);
-            lecturer_selector.setVisibility(View.VISIBLE);
-            threshold_Seeker.setVisibility(View.GONE);
-            Threshold_text.setVisibility(View.GONE);
-            max_threshold_text_id.setVisibility(View.GONE);
-            textView5.setVisibility(View.GONE);
-            threshold_indicator_text.setVisibility(View.GONE);
-            noise_level_text_view.setText(R.string.Classroom_DEBUG_TEXT);
+        runOnUiThread(new Runnable() {
+
+            @Override
+            public void run() {
 
 
-        } else {
-            lecturerText.setVisibility(View.GONE);
-            lecturer_selector.setVisibility(View.GONE);
-            threshold_Seeker.setVisibility(View.VISIBLE);
-            Threshold_text.setVisibility(View.VISIBLE);
-            max_threshold_text_id.setVisibility(View.VISIBLE);
-            textView5.setVisibility(View.VISIBLE);
-            threshold_indicator_text.setVisibility(View.VISIBLE);
-            noise_level_text_view.setText(R.string.Custom_DEBUG_TEXT);
-        }
+                report_false_record_btn.setVisibility(View.GONE);
+                if (mode_selector.getSelectedItem().equals("Classroom")) {
+                    lecturerText.setVisibility(View.VISIBLE);
+                    lecturer_selector.setVisibility(View.VISIBLE);
+                    threshold_Seeker.setVisibility(View.GONE);
+                    Threshold_text.setVisibility(View.GONE);
+                    max_threshold_text_id.setVisibility(View.GONE);
+                    textView5.setVisibility(View.GONE);
+                    threshold_indicator_text.setVisibility(View.GONE);
+                    noise_level_text_view.setText(R.string.Classroom_DEBUG_TEXT);
+
+
+                } else {
+                    lecturerText.setVisibility(View.GONE);
+                    lecturer_selector.setVisibility(View.GONE);
+                    threshold_Seeker.setVisibility(View.VISIBLE);
+                    Threshold_text.setVisibility(View.VISIBLE);
+                    max_threshold_text_id.setVisibility(View.VISIBLE);
+                    textView5.setVisibility(View.VISIBLE);
+                    threshold_indicator_text.setVisibility(View.VISIBLE);
+                    noise_level_text_view.setText(R.string.Custom_DEBUG_TEXT);
+                }
+            }
+        });
     }
+
 }

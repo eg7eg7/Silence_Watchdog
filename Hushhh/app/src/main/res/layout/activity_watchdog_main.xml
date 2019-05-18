@@ -209,7 +209,6 @@
         android:layout_height="27dp"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="64dp"
-        android:layout_marginBottom="15dp"
         android:text="Current noise level :"
         android:textSize="15dp"
         app:layout_constraintBottom_toBottomOf="parent"

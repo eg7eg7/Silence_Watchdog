@@ -1,13 +1,10 @@
 package com.example.silencewatchdog;
 
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.media.MediaPlayer;
-import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -17,7 +14,7 @@ import android.widget.CompoundButton;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 
-public class SoundControllerActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
+public class SoundControllerActivity extends AppCompatActivity {
 
     private Button backBtn;
     private Button playBtn;
@@ -40,7 +37,6 @@ public class SoundControllerActivity extends AppCompatActivity implements Adapte
 
     private boolean isToShuffle;
 
- //   ConstValues value;
 
 
     @Override
@@ -56,68 +52,69 @@ public class SoundControllerActivity extends AppCompatActivity implements Adapte
         isToShuffle = false;
         preferences = getApplicationContext().getSharedPreferences("silence_app", 0);
         prefEditor = preferences.edit();
-
+        final String sound_key = this.getApplicationContext().getString(R.string.PREF_SOUNDNAME_KEY);
+        final String volume_key = this.getApplicationContext().getString(R.string.PREF_VOLUME_KEY);
         sound_selector.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 switch (sound_selector.getSelectedItem()+""){
                     case "shhh":
                         soundTest = MediaPlayer.create(getApplicationContext(), R.raw.shhh);
-                        prefEditor.putString("current_sound", "shhh");
+                        prefEditor.putString(sound_key, "shhh");
                         prefEditor.commit();
                         break;
                     case "shhh_2":
                             soundTest = MediaPlayer.create(getApplicationContext(), R.raw.shhh_2);
-                        prefEditor.putString("current_sound", "shhh_2");
+                        prefEditor.putString(sound_key, "shhh_2");
                         prefEditor.commit();
                             break;
                     case "shhhtwice":
                         soundTest = MediaPlayer.create(getApplicationContext(), R.raw.shhhtwice);
-                        prefEditor.putString("current_sound", "shhhtwice");
+                        prefEditor.putString(sound_key, "shhhtwice");
                         prefEditor.commit();
                         break;
                     case "shutup_man":
-                        prefEditor.putString("current_sound", "shutup_man");
+                        prefEditor.putString(sound_key, "shutup_man");
                         prefEditor.commit();
                         soundTest = MediaPlayer.create(getApplicationContext(), R.raw.shutup_man);
                         break;
                     case "powerfulshhh":
-                        prefEditor.putString("current_sound", "powerfulshhh");
+                        prefEditor.putString(sound_key, "powerfulshhh");
                         prefEditor.commit();
                         soundTest = MediaPlayer.create(getApplicationContext(), R.raw.powerfulshhh);
                         break;
                     case "pullyourselftogether_man":
-                        prefEditor.putString("current_sound", "pullyourselftogether_man");
+                        prefEditor.putString(sound_key, "pullyourselftogether_man");
                         prefEditor.commit();
                         soundTest = MediaPlayer.create(getApplicationContext(), R.raw.pullyourselftogether_man);
                         break;
                     case "pullyourselftogether_women":
-                        prefEditor.putString("current_sound", "pullyourselftogether_women");
+                        prefEditor.putString(sound_key, "pullyourselftogether_women");
                         prefEditor.commit();
                         soundTest = MediaPlayer.create(getApplicationContext(), R.raw.pullyourselftogether_women);
                         break;
                     case "shhh_man":
-                        prefEditor.putString("current_sound", "shhh_man");
+                        prefEditor.putString(sound_key, "shhh_man");
                         prefEditor.commit();
                         soundTest = MediaPlayer.create(getApplicationContext(), R.raw.shhh_man);
                         break;
                     case "shutup_women":
-                        prefEditor.putString("current_sound", "shutup_women");
+                        prefEditor.putString(sound_key, "shutup_women");
                         prefEditor.commit();
                         soundTest = MediaPlayer.create(getApplicationContext(), R.raw.shutup_women);
                         break;
                     case "stoptalking":
-                        prefEditor.putString("current_sound", "stoptalking");
+                        prefEditor.putString(sound_key, "stoptalking");
                         prefEditor.commit();
                         soundTest = MediaPlayer.create(getApplicationContext(), R.raw.stoptalking);
                         break;
                     case "stoptalking_women":
-                        prefEditor.putString("current_sound", "stoptalking_women");
+                        prefEditor.putString(sound_key, "stoptalking_women");
                         prefEditor.commit();
                         soundTest = MediaPlayer.create(getApplicationContext(), R.raw.stoptalking_women);
                         break;
                     case "stopthat_women":
-                        prefEditor.putString("current_sound", "stopthat_women");
+                        prefEditor.putString(sound_key, "stopthat_women");
                         prefEditor.commit();
                         soundTest = MediaPlayer.create(getApplicationContext(), R.raw.stopthat_women);
                         break;
@@ -140,7 +137,7 @@ public class SoundControllerActivity extends AppCompatActivity implements Adapte
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 count = progress;
-                prefEditor.putString("volume", progress+"");
+                prefEditor.putString(volume_key, progress+"");
                 prefEditor.commit();
             }
             @Override
@@ -183,7 +180,6 @@ public class SoundControllerActivity extends AppCompatActivity implements Adapte
         adapter = ArrayAdapter.createFromResource(this, R.array.soundModes, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         sound_selector.setAdapter(adapter);
-        sound_selector.setOnItemSelectedListener(this);
     }
 
     public void shuffleSound(){
@@ -191,15 +187,5 @@ public class SoundControllerActivity extends AppCompatActivity implements Adapte
             int ran = (int)(Math.random()*sound_selector.getCount());
             sound_selector.setSelection(ran);
         }
-    }
-
-    @Override
-    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
-    }
-
-    @Override
-    public void onNothingSelected(AdapterView<?> parent) {
-
     }
 }
